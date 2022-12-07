@@ -17,4 +17,5 @@ public final class Constants {
   public static  final  int kRight_2 = 1;
   public static  final int kLeft_1 = 2;
   public static  final int KLeft_2 = 3; 
+  public static final int KcoolMotor = 4;
 }
