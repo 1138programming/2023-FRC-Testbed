@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -30,12 +32,38 @@ public final class Constants {
         public static final int KFrontRightAngleID = 3;
         public static final int KFrontRightDriveID = 4;
 
-        public static final int KBackRightAngleID = 5;
-        public static final int KBackRightDriveID = 6;
+        public static final int KBackLeftAngleID = 5;
+        public static final int KBackLeftDriveID = 6;
 
-        public static final int KBackLeftAngleID = 7;
-        public static final int KBackLeftDriveID = 8;
+        public static final int KBackRightAngleID = 7;
+        public static final int KBackRightDriveID = 8;
+
+        
+        public static final double KFrontLeftOffset = 0;
+        public static final double KFrontRightOffset = 0;
+        public static final double KBackLeftOffset = 0;
+        public static final double KBackRightOffset = 0;
+
+        public static final int KFrontLeftMagEncoderID = 1;
+        public static final int KFrontRightMagEncoderID = 2;
+        public static final int KBackLeftMagEncoderID = 3;
+        public static final int KBackRightMagEncoderID = 4;
+
+        public static final double KWheelDistanceFromCenter = 0.3683;
+
+        public static final Translation2d KFrontLeftLocation = new Translation2d(
+            KWheelDistanceFromCenter, KWheelDistanceFromCenter
+        );
+        public static final Translation2d KFrontRightLocation = new Translation2d(
+            KWheelDistanceFromCenter, -KWheelDistanceFromCenter
+        );
+        public static final Translation2d KBackLeftLocation = new Translation2d(
+            -KWheelDistanceFromCenter, KWheelDistanceFromCenter
+        );
+        public static final Translation2d KBackRightLocation = new Translation2d(
+            -KWheelDistanceFromCenter, -KWheelDistanceFromCenter
+        );        
     }
-
+    
     public static final int KLeftBackDrive = 1;
 }
