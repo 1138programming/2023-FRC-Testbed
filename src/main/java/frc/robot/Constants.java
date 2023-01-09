@@ -37,6 +37,7 @@ public final class Constants {
   // public static final double KAngleMotorRotToDeg = KAngleMotorShaftToWheelRatio * 360;
   public static final double KAngleMotorRotToDeg = 35;
   public static final double KNeoMaxRPM = 5700;
+  public static final double KPhysicalMaxDriveSpeedMPS = KNeoMaxRPM * KDriveMotorRPMToMetersPerSec;
 
   
   //Base
