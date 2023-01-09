@@ -2,11 +2,16 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -15,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Base extends SubsystemBase {
@@ -67,9 +73,9 @@ public class Base extends SubsystemBase {
   public SwerveModuleState[] getSpeeds() {
     SwerveModuleState[] states = new SwerveModuleState[4];
 
-    states[0] = new SwerveModuleState(-modules[0].getDriveEncoderVel(), modules[0].getAngleR2D());
-    states[1] = new SwerveModuleState(-modules[1].getDriveEncoderVel(), modules[1].getAngleR2D());
-    states[2] = new SwerveModuleState(-modules[2].getDriveEncoderVel(), modules[2].getAngleR2D());
+    states[0] = new SwerveModuleState(modules[0].getDriveEncoderVel(), modules[0].getAngleR2D());
+    states[1] = new SwerveModuleState(modules[1].getDriveEncoderVel(), modules[1].getAngleR2D());
+    states[2] = new SwerveModuleState(modules[2].getDriveEncoderVel(), modules[2].getAngleR2D());
     states[3] = new SwerveModuleState(modules[3].getDriveEncoderVel(), modules[3].getAngleR2D());
 
     return states;
@@ -97,14 +103,6 @@ public class Base extends SubsystemBase {
   }
 
   class SwerveModule {
-    private double angleP;
-    private double angleI;
-    private double angleD;
-
-    private double driveP;
-    private double driveI;
-    private double driveD;
-
     private CANSparkMax angleMotor;
     private CANSparkMax driveMotor; 
 
@@ -112,22 +110,71 @@ public class Base extends SubsystemBase {
     private RelativeEncoder driveEncoder;
     private RelativeEncoder angleEncoder;
 
+    private PIDController driveController;
+    private PIDController angleController;
+
     private Rotation2d offset;
 
     SwerveModule(CANSparkMax angleMotor, CANSparkMax driveMotor, DutyCycleEncoder magEncoder, Rotation2d offset) {
-      angleP = KAngleP;
-      angleI = KAngleI;
-      angleD = KAngleD;
-
-      driveP = KDriveP;
-      driveI = KDriveI;
-      driveD = KDriveD;
-
+      angleMotor.setIdleMode(IdleMode.kBrake);
+      driveMotor.setIdleMode(IdleMode.kBrake);
       this.angleMotor = angleMotor;
       this.driveMotor = driveMotor;
 
       this.magEncoder = magEncoder;
+      driveEncoder = driveMotor.getEncoder();
+      angleEncoder = angleMotor.getEncoder();
+      driveEncoder.setPositionConversionFactor(KDriveMotorRotToMeter);
+      driveEncoder.setVelocityConversionFactor(KDriveMotorRPMToMetersPerSec);
+      angleEncoder.setPositionConversionFactor(KAngleMotorRotToDeg);
+
+      driveController = new PIDController(KDriveP, KDriveI, KDriveD);
+      angleController = new PIDController(KAngleP, KAngleI, KAngleD);
+      angleController.enableContinuousInput(-180, 180); // Tells PIDController that 180 deg is same in both directions
+
+      // driveMotor.
       this.offset = offset;
+    }
+
+    public void setDesiredState(SwerveModuleState desiredState) {
+      double angleMotorOutput;
+      double driveMotorOutput;
+
+      // If no controller input, set angle and drive motor to 0
+      if (Math.abs(desiredState.speedMetersPerSecond) < 0.001) {
+        angleMotor.set(0);
+        driveMotor.set(0);
+        return;
+      }
+
+      Rotation2d currentAngleR2D = getAngleR2D();
+      desiredState = SwerveModuleState.optimize(desiredState, currentAngleR2D);
+
+      // Angle calculation
+      Rotation2d rotationDelta = desiredState.angle.minus(currentAngleR2D);
+      double deltaDeg = rotationDelta.getDegrees();
+
+      if (Math.abs(deltaDeg) < 2) {
+        angleMotorOutput = 0;
+      }
+      else {
+        angleMotorOutput = angleController.calculate(getAngleDeg(), desiredState.angle.getDegrees());
+      }
+
+      // Drive calculation
+      driveMotorOutput = desiredState.speedMetersPerSecond / KPhysicalMaxDriveSpeedMPS;
+    }
+
+    public void setDriveGains() {
+      driveController.setP(SmartDashboard.getNumber("drive kp", 0));
+      driveController.setP(SmartDashboard.getNumber("drive ki", 0));
+      driveController.setP(SmartDashboard.getNumber("drive kd", 0));
+    }
+
+    public void setAngleGains() {
+      driveController.setP(SmartDashboard.getNumber("angle kp", 0));
+      driveController.setP(SmartDashboard.getNumber("angle ki", 0));
+      driveController.setP(SmartDashboard.getNumber("angle kd", 0));
     }
 
     public void resetRelEncoders() {
@@ -152,8 +199,7 @@ public class Base extends SubsystemBase {
       return angle;
     }
     public double getAngleDeg() {
-      double angle = (getAngleDegRaw() + KDegPerRotation) % 360;
-      return angle;
+      return angleEncoder.getPosition() % 360;
     }
     public Rotation2d getAngleR2D() {
       return Rotation2d.fromDegrees(getAngleDeg()); 
