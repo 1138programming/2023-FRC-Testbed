@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SPI;
@@ -25,7 +26,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Base extends SubsystemBase {
 
-  private SwerveModule[] modules;
+  private SwerveModule frontLeftModule;
+  private SwerveModule frontRightModule;
+  private SwerveModule backLeftModule;
+  private SwerveModule backRightModule;
 
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
@@ -34,67 +38,60 @@ public class Base extends SubsystemBase {
   private Pose2d pose;
 
   public Base() {
-    modules = new SwerveModule[] {
-      new SwerveModule(
-        new CANSparkMax(KFrontLeftAngleID, MotorType.kBrushless),
-        new CANSparkMax(KFrontLeftDriveID, MotorType.kBrushless),
-        new DutyCycleEncoder(KFrontLeftMagEncoderID),
-        Rotation2d.fromDegrees(KFrontLeftOffset)
-      ),
-      new SwerveModule(
-        new CANSparkMax(KFrontRightAngleID, MotorType.kBrushless), 
-        new CANSparkMax(KFrontRightDriveID, MotorType.kBrushless), 
-        new DutyCycleEncoder(KFrontRightMagEncoderID), 
-        Rotation2d.fromDegrees(KFrontRightOffset)
-      ),
-      new SwerveModule(
-        new CANSparkMax(KBackLeftAngleID, MotorType.kBrushless), 
-        new CANSparkMax(KBackLeftDriveID, MotorType.kBrushless), 
-        new DutyCycleEncoder(KBackLeftMagEncoderID), 
-        Rotation2d.fromDegrees(KBackLeftOffset)
-      ),
-      new SwerveModule(
-        new CANSparkMax(KBackRightAngleID, MotorType.kBrushless), 
-        new CANSparkMax(KBackRightDriveID, MotorType.kBrushless), 
-        new DutyCycleEncoder(KBackRightMagEncoderID), 
-        Rotation2d.fromDegrees(KBackRightOffset)
-      )
-    };
+    frontLeftModule = new SwerveModule(
+      new CANSparkMax(KFrontLeftAngleID, MotorType.kBrushless),
+      new CANSparkMax(KFrontLeftDriveID, MotorType.kBrushless),
+      new DutyCycleEncoder(KFrontLeftMagEncoderID),
+      Rotation2d.fromDegrees(KFrontLeftOffset)
+    );
+    frontRightModule = new SwerveModule(
+      new CANSparkMax(KFrontRightAngleID, MotorType.kBrushless), 
+      new CANSparkMax(KFrontRightDriveID, MotorType.kBrushless), 
+      new DutyCycleEncoder(KFrontRightMagEncoderID), 
+      Rotation2d.fromDegrees(KFrontRightOffset)
+    );
+    backLeftModule = new SwerveModule(
+      new CANSparkMax(KBackLeftAngleID, MotorType.kBrushless), 
+      new CANSparkMax(KBackLeftDriveID, MotorType.kBrushless), 
+      new DutyCycleEncoder(KBackLeftMagEncoderID), 
+      Rotation2d.fromDegrees(KBackLeftOffset)
+    );
+    backRightModule = new SwerveModule(
+      new CANSparkMax(KBackRightAngleID, MotorType.kBrushless), 
+      new CANSparkMax(KBackRightDriveID, MotorType.kBrushless), 
+      new DutyCycleEncoder(KBackRightMagEncoderID), 
+      Rotation2d.fromDegrees(KBackRightOffset)
+    );
 
     kinematics = new SwerveDriveKinematics(
       KFrontLeftLocation, KFrontRightLocation,
       KBackLeftLocation, KBackRightLocation
     );
-    odometry = new SwerveDriveOdometry(kinematics, new Rotation2d());
+    odometry = new SwerveDriveOdometry(kinematics, getHeading(), getPositions());
     gyro = new AHRS(SPI.Port.kMXP);
     gyro.reset();
   }
 
-  public SwerveModuleState[] getSpeeds() {
-    SwerveModuleState[] states = new SwerveModuleState[4];
+  public SwerveModulePosition[] getPositions() {
+    // SwerveModuleState[] states = new SwerveModuleState[4];
 
-    states[0] = new SwerveModuleState(modules[0].getDriveEncoderVel(), modules[0].getAngleR2D());
-    states[1] = new SwerveModuleState(modules[1].getDriveEncoderVel(), modules[1].getAngleR2D());
-    states[2] = new SwerveModuleState(modules[2].getDriveEncoderVel(), modules[2].getAngleR2D());
-    states[3] = new SwerveModuleState(modules[3].getDriveEncoderVel(), modules[3].getAngleR2D());
+    // states[0] = new SwerveModuleState(frontLeftModule.getDriveEncoderVel(), frontLeftModule.getAngleR2D());
+    // states[1] = new SwerveModuleState(frontRightModule.getDriveEncoderVel(), frontRightModule.getAngleR2D());
+    // states[2] = new SwerveModuleState(backLeftModule.getDriveEncoderVel(), backLeftModule.getAngleR2D());
+    // states[3] = new SwerveModuleState(backRightModule.getDriveEncoderVel(), backRightModule.getAngleR2D());
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
-    return states;
+    positions[0] = new SwerveModulePosition(frontLeftModule.getDriveEncoderPos(), frontLeftModule.getAngleR2D());
+    positions[1] = new SwerveModulePosition(frontRightModule.getDriveEncoderPos(), frontRightModule.getAngleR2D());
+    positions[2] = new SwerveModulePosition(backLeftModule.getDriveEncoderPos(), backLeftModule.getAngleR2D());
+    positions[3] = new SwerveModulePosition(backRightModule.getDriveEncoderPos(), backRightModule.getAngleR2D());
+
+    return positions;
   }
 
   @Override
   public void periodic() {
-    pose = odometry.update(getHeading(), getSpeeds());
-  }
-
-  public SwerveModuleState[] getStates() {
-    SwerveModuleState[] states = new SwerveModuleState[4];
-
-    states[0] = new SwerveModuleState(modules[0].getDriveEncoderVel(), modules[0].getAngleR2D());
-    states[1] = new SwerveModuleState(modules[1].getDriveEncoderVel(), modules[1].getAngleR2D());
-    states[2] = new SwerveModuleState(modules[2].getDriveEncoderVel(), modules[2].getAngleR2D());
-    states[3] = new SwerveModuleState(modules[3].getDriveEncoderVel(), modules[3].getAngleR2D());
-
-    return states;
+    pose = odometry.update(getHeading(), getPositions());
   }
 
   //Getters
