@@ -3,7 +3,9 @@ package frc.robot.subsystems;
 import static frc.robot.Constants.*;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
@@ -15,11 +17,13 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,34 +37,42 @@ public class Base extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics;
   private SwerveDriveOdometry odometry;
-  public static AHRS gyro;
+  private AHRS gyro;
 
   private Pose2d pose;
+  
+  private boolean generateOdometryLog;
+  private long startTime;
+  private ArrayList<String> odometryData;
 
   public Base() {
     frontLeftModule = new SwerveModule(
       new CANSparkMax(KFrontLeftAngleID, MotorType.kBrushless),
       new CANSparkMax(KFrontLeftDriveID, MotorType.kBrushless),
       new DutyCycleEncoder(KFrontLeftMagEncoderID),
-      Rotation2d.fromDegrees(KFrontLeftOffset)
+      Rotation2d.fromDegrees(KFrontLeftOffset),
+      KFrontLeftInversion
     );
     frontRightModule = new SwerveModule(
       new CANSparkMax(KFrontRightAngleID, MotorType.kBrushless), 
       new CANSparkMax(KFrontRightDriveID, MotorType.kBrushless), 
       new DutyCycleEncoder(KFrontRightMagEncoderID), 
-      Rotation2d.fromDegrees(KFrontRightOffset)
+      Rotation2d.fromDegrees(KFrontRightOffset),
+      KFrontRightInversion
     );
     backLeftModule = new SwerveModule(
       new CANSparkMax(KBackLeftAngleID, MotorType.kBrushless), 
       new CANSparkMax(KBackLeftDriveID, MotorType.kBrushless), 
       new DutyCycleEncoder(KBackLeftMagEncoderID), 
-      Rotation2d.fromDegrees(KBackLeftOffset)
+      Rotation2d.fromDegrees(KBackLeftOffset),
+      KBackLeftInversion
     );
     backRightModule = new SwerveModule(
       new CANSparkMax(KBackRightAngleID, MotorType.kBrushless), 
       new CANSparkMax(KBackRightDriveID, MotorType.kBrushless), 
       new DutyCycleEncoder(KBackRightMagEncoderID), 
-      Rotation2d.fromDegrees(KBackRightOffset)
+      Rotation2d.fromDegrees(KBackRightOffset),
+      KBackRightInversion
     );
 
     kinematics = new SwerveDriveKinematics(
@@ -70,15 +82,46 @@ public class Base extends SubsystemBase {
     odometry = new SwerveDriveOdometry(kinematics, getHeading(), getPositions());
     gyro = new AHRS(SPI.Port.kMXP);
     gyro.reset();
+
+    generateOdometryLog = false;
+    startTime = RobotController.getFPGATime();
+    odometryData = new ArrayList<String>();
+  }
+
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double maxDriveSpeedMPS) {
+    xSpeed *= maxDriveSpeedMPS;
+    ySpeed *= maxDriveSpeedMPS;
+    rot *= KMaxAngularSpeed;
+    
+    //feeding parameter speeds into toSwerveModuleStates to get an array of SwerveModuleState objects
+    SwerveModuleState[] states =
+      kinematics.toSwerveModuleStates(
+        fieldRelative
+          ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(gyro.getAngle()))
+          : new ChassisSpeeds(xSpeed, ySpeed, rot));
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, KPhysicalMaxDriveSpeedMPS);
+
+    //setting module states, aka moving the motors
+    frontLeftModule.setDesiredState(states[0]);
+    frontRightModule.setDesiredState(states[1]);
+    backLeftModule.setDesiredState(states[2]);
+    backRightModule.setDesiredState(states[3]);
+}
+
+  //recalibrates gyro offset
+  public void resetGyro() {
+    gyro.reset(); 
+    gyro.setAngleAdjustment(0);
+  }
+
+  public void resetAllRelEncoders() {
+    frontLeftModule.resetRelEncoders();
+    frontRightModule.resetRelEncoders();
+    backLeftModule.resetRelEncoders();
+    backRightModule.resetRelEncoders();
   }
 
   public SwerveModulePosition[] getPositions() {
-    // SwerveModuleState[] states = new SwerveModuleState[4];
-
-    // states[0] = new SwerveModuleState(frontLeftModule.getDriveEncoderVel(), frontLeftModule.getAngleR2D());
-    // states[1] = new SwerveModuleState(frontRightModule.getDriveEncoderVel(), frontRightModule.getAngleR2D());
-    // states[2] = new SwerveModuleState(backLeftModule.getDriveEncoderVel(), backLeftModule.getAngleR2D());
-    // states[3] = new SwerveModuleState(backRightModule.getDriveEncoderVel(), backRightModule.getAngleR2D());
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
     positions[0] = new SwerveModulePosition(frontLeftModule.getDriveEncoderPos(), frontLeftModule.getAngleR2D());
@@ -88,17 +131,45 @@ public class Base extends SubsystemBase {
 
     return positions;
   }
-
-  @Override
-  public void periodic() {
-    pose = odometry.update(getHeading(), getPositions());
-  }
-
-  //Getters
+  
   public Rotation2d getHeading() {
     return Rotation2d.fromDegrees(gyro.getAngle());
   }
 
+  public void setGenerateOdometryLog(boolean generateOdometryLog) {
+    this.generateOdometryLog = generateOdometryLog;
+  }
+
+  private void genOdometryData() {
+    long time = startTime - RobotController.getFPGATime();
+    String s = ("" + (double) time / 1000000);
+    s += "," + pose.getX() + "," + pose.getY() + "," + pose.getRotation().getDegrees();
+
+    odometryData.add("" + (double) time / 1000000);
+  }
+
+  public void writeOdometryData() {
+    try {  
+      FileWriter writer = new FileWriter("OdometryLog.txt");
+      for (int i = 0; i < 100; i++) {
+        writer.write(odometryData.get(i));
+      }
+      writer.close();
+    } catch (IOException e) {
+      System.out.println("An error occurred.");
+      e.printStackTrace();
+    } 
+  }
+
+  @Override
+  public void periodic() {
+    pose = odometry.update(getHeading(), getPositions());
+
+    if (generateOdometryLog && odometryData.size() < 1000) {
+      genOdometryData();
+    }
+  }
+  
   class SwerveModule {
     private CANSparkMax angleMotor;
     private CANSparkMax driveMotor; 
@@ -112,7 +183,9 @@ public class Base extends SubsystemBase {
 
     private Rotation2d offset;
 
-    SwerveModule(CANSparkMax angleMotor, CANSparkMax driveMotor, DutyCycleEncoder magEncoder, Rotation2d offset) {
+    private boolean isInverted;
+
+    SwerveModule(CANSparkMax angleMotor, CANSparkMax driveMotor, DutyCycleEncoder magEncoder, Rotation2d offset, boolean isInverted) {
       angleMotor.setIdleMode(IdleMode.kBrake);
       driveMotor.setIdleMode(IdleMode.kBrake);
       this.angleMotor = angleMotor;
@@ -129,8 +202,9 @@ public class Base extends SubsystemBase {
       angleController = new PIDController(KAngleP, KAngleI, KAngleD);
       angleController.enableContinuousInput(-180, 180); // Tells PIDController that 180 deg is same in both directions
 
-      // driveMotor.
       this.offset = offset;
+
+      this.isInverted = isInverted;
     }
 
     public void setDesiredState(SwerveModuleState desiredState) {
@@ -160,6 +234,13 @@ public class Base extends SubsystemBase {
 
       // Drive calculation
       driveMotorOutput = desiredState.speedMetersPerSecond / KPhysicalMaxDriveSpeedMPS;
+
+      if (isInverted) {
+        driveMotorOutput *= -1;
+      }
+
+      angleMotor.set(angleMotorOutput);
+      driveMotor.set(driveMotorOutput);
     }
 
     public void setDriveGains() {
@@ -176,7 +257,7 @@ public class Base extends SubsystemBase {
 
     public void resetRelEncoders() {
       driveEncoder.setPosition(0);
-      angleEncoder.setPosition(getAngleDeg() - offset.getDegrees());
+      angleEncoder.setPosition(getAngleDegRaw() - offset.getDegrees());
     }
 
     // Drive Encoder getters
@@ -195,6 +276,7 @@ public class Base extends SubsystemBase {
       double angle = getMagRotations() * 360 % 360;
       return angle;
     }
+    
     public double getAngleDeg() {
       return angleEncoder.getPosition() % 360;
     }

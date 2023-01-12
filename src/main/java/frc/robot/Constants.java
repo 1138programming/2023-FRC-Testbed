@@ -34,10 +34,11 @@ public final class Constants {
   public static final double KDriveMotorRPMToMetersPerSec = KDriveMotorRotToMeter / 60;
 
   private static final double KAngleMotorShaftToWheelRatio = 1 / 10.2857;
-  // public static final double KAngleMotorRotToDeg = KAngleMotorShaftToWheelRatio * 360;
   public static final double KAngleMotorRotToDeg = 35;
   public static final double KNeoMaxRPM = 5700;
   public static final double KPhysicalMaxDriveSpeedMPS = KNeoMaxRPM * KDriveMotorRPMToMetersPerSec;
+  public static final double KBaseDriveLowPercent = 0.4;
+  public static final double KMaxAngularSpeed = Math.PI;
 
   
   //Base
@@ -78,5 +79,10 @@ public final class Constants {
   public static final Translation2d KBackRightLocation = new Translation2d(
     -KWheelDistanceFromCenter, -KWheelDistanceFromCenter
   );
+
+  public static final boolean KFrontLeftInversion = false;
+  public static final boolean KFrontRightInversion = false;
+  public static final boolean KBackLeftInversion = false;
+  public static final boolean KBackRightInversion = false;
 }
         
