@@ -136,22 +136,26 @@ public class Base extends SubsystemBase {
     return Rotation2d.fromDegrees(gyro.getAngle());
   }
 
+  public double getHeadingDeg() {
+    return gyro.getAngle();
+  }
+
   public void setGenerateOdometryLog(boolean generateOdometryLog) {
     this.generateOdometryLog = generateOdometryLog;
   }
 
   private void genOdometryData() {
-    long time = startTime - RobotController.getFPGATime();
+    long time =  RobotController.getFPGATime() - startTime;
     String s = ("" + (double) time / 1000000);
     s += "," + pose.getX() + "," + pose.getY() + "," + pose.getRotation().getDegrees();
 
-    odometryData.add("" + (double) time / 1000000);
+    odometryData.add(s);
   }
 
   public void writeOdometryData() {
     try {  
       FileWriter writer = new FileWriter("OdometryLog.txt");
-      for (int i = 0; i < 100; i++) {
+      for (int i = 0; i < 1000; i++) {
         writer.write(odometryData.get(i));
       }
       writer.close();
