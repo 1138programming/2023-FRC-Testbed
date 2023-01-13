@@ -11,11 +11,11 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class SparkMax extends SubsystemBase {
+public class SparkMaxTest extends SubsystemBase {
   CANSparkMax sparkMax;
 
   /** Creates a new Testing. */
-  public SparkMax() {
+  public SparkMaxTest() {
     sparkMax = new CANSparkMax(KSparkMax, MotorType.kBrushless);
   }
 

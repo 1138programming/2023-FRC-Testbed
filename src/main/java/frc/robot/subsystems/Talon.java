@@ -27,10 +27,18 @@ public class Talon extends SubsystemBase {
 
   public void moveTalon(int num, double speed) {
     switch (num) {
-      case(1): talon1.set(ControlMode.PercentOutput, speed);
-      case(2): talon2.set(ControlMode.PercentOutput, speed);
-      case(3): talon3.set(ControlMode.PercentOutput, speed);
-      case(4): talon4.set(ControlMode.PercentOutput, speed);
+      case 1:
+       talon1.set(ControlMode.PercentOutput, speed);
+       break;
+      case 2:
+       talon2.set(ControlMode.PercentOutput, speed);
+        break;
+       case 3:
+       talon3.set(ControlMode.PercentOutput, speed);
+       break;
+      case 4:
+       talon4.set(ControlMode.PercentOutput, speed);
+       break;
     }
   }
 

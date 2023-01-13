@@ -9,7 +9,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.moveVictor;
 import frc.robot.subsystems.ExampleSubsystem;
+
 import frc.robot.subsystems.VictorTest;
+
+import frc.robot.subsystems.MoveSparkMax;
+import frc.robot.subsystems.SparkMaxTest;
+
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -25,6 +30,10 @@ public class RobotContainer {
 
   private final moveVictor moveVictor = new moveVictor(victorTest);
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+
+
+  private final SparkMaxTest sparkMax = new SparkMaxTest();
+  private final MoveSparkMax moveSparkMax = new MoveSparkMax(sparkMax);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
