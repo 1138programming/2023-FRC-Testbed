@@ -4,13 +4,23 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.*;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Testing extends SubsystemBase {
-  
-  /** Creates a new Testing. */
-  public Testing() {
+public class Victor extends SubsystemBase {
+  VictorSPX victor;
 
+  /** Creates a new Testing. */
+  public Victor() {
+    victor = new VictorSPX(KVictor);
+  }
+
+  public void move(double speed) {
+    victor.set(ControlMode.PercentOutput, speed);
   }
 
   @Override
