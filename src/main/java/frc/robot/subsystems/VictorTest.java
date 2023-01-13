@@ -12,7 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class VictorTest extends SubsystemBase {
-  VictorSPX victor;
+  private VictorSPX victor;
 
   /** Creates a new Testing. */
   public VictorTest() {

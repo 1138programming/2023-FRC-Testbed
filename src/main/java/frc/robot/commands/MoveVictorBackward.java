@@ -4,15 +4,13 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
-import edu.wpi.first.wpilibj.motorcontrol.Victor;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.VictorTest;
 
-public class moveVictor extends CommandBase {
+public class MoveVictorBackward extends CommandBase {
   private VictorTest victor;
-  public moveVictor(VictorTest victor) {
+  public MoveVictorBackward(VictorTest victor) {
     this.victor = victor;
     addRequirements(victor);
   }
@@ -22,7 +20,7 @@ public class moveVictor extends CommandBase {
   @Override
   public void execute()
   {
-    victor.move(0.5);    
+    victor.move(-0.5);    
   }
 
 

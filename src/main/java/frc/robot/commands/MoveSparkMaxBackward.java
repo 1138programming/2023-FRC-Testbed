@@ -2,17 +2,19 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.SparkMaxTest;
 
-public class MoveSparkMax extends CommandBase {
+public class MoveSparkMaxBackward extends CommandBase {
   /** Creates a new MoveSparkMax. */
   private SparkMaxTest sparkMax;
 
-  public MoveSparkMax(SparkMaxTest sparkMax) {
+  public MoveSparkMaxBackward(SparkMaxTest sparkMax) {
     this.sparkMax = sparkMax;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(sparkMax);
   }
 
   // Called when the command is initially scheduled.
@@ -24,7 +26,7 @@ public class MoveSparkMax extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    sparkMax.moveSparkMax(0.5);
+    sparkMax.moveSparkMax(-0.5);
   }
 
   // Called once the command ends or is interrupted.

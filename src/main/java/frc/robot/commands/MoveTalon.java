@@ -4,34 +4,29 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.motorcontrol.Victor;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.VictorTest;
+import frc.robot.subsystems.TalonTest;
 
-public class moveVictor extends CommandBase {
-  private VictorTest victor;
-  public moveVictor(VictorTest victor) {
-    this.victor = victor;
-    addRequirements(victor);
+public class MoveTalon extends CommandBase {
+  /** Creates a new MoveTalon. */
+  private TalonTest talon;
+  public MoveTalon(TalonTest talon) {
+    this.talon = talon;
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(talon);
   }
-
-  
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute()
-  {
-    victor.move(0.5);    
-  }
-
-
-
-
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {}
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    talon.move(1, 0.5);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
