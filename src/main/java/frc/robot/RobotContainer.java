@@ -13,16 +13,18 @@ import frc.robot.commands.MoveSparkMaxBackward;
 import frc.robot.commands.MoveSparkMaxForward;
 import frc.robot.commands.moveVictor;
 import frc.robot.subsystems.ExampleSubsystem;
-
+import frc.robot.subsystems.GroupedTalons;
 import frc.robot.subsystems.VictorTest;
 import frc.robot.subsystems.SparkMaxTest;
 
-import frc.robot.commands.MoveTalon;
 import frc.robot.commands.MoveTalonForward;
+import frc.robot.commands.MoveTalonWithLeftJoystick;
+import frc.robot.commands.MoveTalonsWithRightJoystick;
 import frc.robot.commands.MoveVictorBackward;
 import frc.robot.commands.MoveVictorForward;
 import frc.robot.commands.MoveTalonBackward;
-import frc.robot.subsystems.TalonTest;
+import frc.robot.subsystems.LeftTalon;
+import frc.robot.subsystems.RightTalon;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -77,20 +79,27 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final VictorTest victor = new VictorTest();
   private final SparkMaxTest sparkMax = new SparkMaxTest();
-  private final TalonTest talon = new TalonTest();
+  private final LeftTalon leftTalon = new LeftTalon();
+  private final RightTalon rightTalon = new RightTalon();
+  private final GroupedTalons groupedTalons = new GroupedTalons();
 
   
   // commands
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
-  private final MoveTalon moveTalon = new MoveTalon(talon);
-  private final MoveTalonForward moveTalonForward = new MoveTalonForward(talon);
-  private final MoveTalonBackward moveTalonBackward = new MoveTalonBackward(talon);
+
+  private final MoveTalonForward moveTalonForward = new MoveTalonForward(rightTalon);
+  private final MoveTalonBackward moveTalonBackward = new MoveTalonBackward(rightTalon);
+
   private final moveVictor moveVictor = new moveVictor(victor);
   private final MoveVictorForward moveVictorForward = new MoveVictorForward(victor);
   private final MoveVictorBackward moveVictorBackward = new MoveVictorBackward(victor);
+
   private final MoveSparkMax moveSparkMax = new MoveSparkMax(sparkMax);
   private final MoveSparkMaxForward moveSparkMaxForward = new MoveSparkMaxForward(sparkMax);
   private final MoveSparkMaxBackward moveSparkMaxBackward = new MoveSparkMaxBackward(sparkMax);
+
+  private final MoveTalonWithLeftJoystick moveTalonWithLeftJoystick = new MoveTalonWithLeftJoystick(leftTalon);
+  private final MoveTalonsWithRightJoystick moveTalonWithRightJoystick = new MoveTalonsWithRightJoystick(groupedTalons);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

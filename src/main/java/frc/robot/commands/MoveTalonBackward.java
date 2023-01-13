@@ -5,12 +5,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.TalonTest;
+import frc.robot.subsystems.RightTalon;
 
 public class MoveTalonBackward extends CommandBase {
   /** Creates a new MoveTalon. */
-  private TalonTest talon;
-  public MoveTalonBackward(TalonTest talon) {
+  private RightTalon talon;
+  public MoveTalonBackward(RightTalon talon) {
     this.talon = talon;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(talon);
@@ -23,7 +23,7 @@ public class MoveTalonBackward extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    talon.move(1, -0.5);
+    talon.move(-0.5);
   }
 
   // Called once the command ends or is interrupted.

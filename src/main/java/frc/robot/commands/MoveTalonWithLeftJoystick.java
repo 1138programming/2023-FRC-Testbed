@@ -4,15 +4,14 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.TalonTest;
+import frc.robot.Robot;
+import frc.robot.subsystems.LeftTalon;
 
-public class MoveTalon extends CommandBase {
-  /** Creates a new MoveTalon. */
-  private TalonTest talon;
-  public MoveTalon(TalonTest talon) {
+public class MoveTalonWithLeftJoystick extends CommandBase {
+  private LeftTalon talon;
+  /** Creates a new MoveTalonWithJoystick. */
+  public MoveTalonWithLeftJoystick(LeftTalon talon) {
     this.talon = talon;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(talon);
@@ -25,7 +24,7 @@ public class MoveTalon extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    talon.move(1, 0.5);
+    talon.move(Robot.m_robotContainer.getLogiLeftXAxis());
   }
 
   // Called once the command ends or is interrupted.
