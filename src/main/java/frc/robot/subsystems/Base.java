@@ -21,18 +21,18 @@ public class Base extends SubsystemBase {
   
   public Base() {
  
-  private TalonFX topleftmotor = new TalonFX(leftMotor1Port);
-  private TalonFX bottomleftmotor = new TalonFX(leftMotor2Port);
-  private TalonFX toprightmotor = new TalonFX(2);
-  private TalonFX bottomrightmotor = new TalonFX(3);
+  topleftmotor = new TalonFX(0);
+  bottomleftmotor = new TalonFX(1);
+  toprightmotor = new TalonFX(2);
+  bottomrightmotor = new TalonFX(3);
   }
 
   public void Move(float leftSpeed, float rightSpeed)
   {
-    topleftmotor.set.(ControlMode.PercentOutput,leftSpeed);
-    bottomleftmotor.set.(ControlMode.PercentOutput,leftSpeed);
-    toprightmotor.set.(ControlMode.PercentOutput,rightSpeed);
-    bottomrightmotor.set.(ControlMode.PercentOutput,rightSpeed);
+    topleftmotor.set(ControlMode.PercentOutput,leftSpeed);
+    bottomleftmotor.set(ControlMode.PercentOutput,leftSpeed);
+    toprightmotor.set(ControlMode.PercentOutput,rightSpeed);
+    bottomrightmotor.set(ControlMode.PercentOutput,rightSpeed);
   }
 
 
