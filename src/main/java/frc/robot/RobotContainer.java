@@ -22,6 +22,9 @@ import frc.robot.commands.MoveTalonWithLeftJoystick;
 import frc.robot.commands.MoveTalonsWithRightJoystick;
 import frc.robot.commands.MoveVictorBackward;
 import frc.robot.commands.MoveVictorForward;
+import frc.robot.commands.RightTalonStop;
+import frc.robot.commands.SparkMaxStop;
+import frc.robot.commands.VictorStop;
 import frc.robot.commands.MoveTalonBackward;
 import frc.robot.subsystems.LeftTalon;
 import frc.robot.subsystems.RightTalon;
@@ -88,21 +91,29 @@ public class RobotContainer {
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   private final MoveTalonForward moveTalonForward = new MoveTalonForward(rightTalon);
+  private final RightTalonStop rightTalonStop = new RightTalonStop(rightTalon);
   private final MoveTalonBackward moveTalonBackward = new MoveTalonBackward(rightTalon);
 
   private final moveVictor moveVictor = new moveVictor(victor);
   private final MoveVictorForward moveVictorForward = new MoveVictorForward(victor);
   private final MoveVictorBackward moveVictorBackward = new MoveVictorBackward(victor);
+  private final VictorStop victorStop = new VictorStop(victor);
 
   private final MoveSparkMax moveSparkMax = new MoveSparkMax(sparkMax);
   private final MoveSparkMaxForward moveSparkMaxForward = new MoveSparkMaxForward(sparkMax);
   private final MoveSparkMaxBackward moveSparkMaxBackward = new MoveSparkMaxBackward(sparkMax);
+  private final SparkMaxStop sparkMaxStop = new SparkMaxStop(sparkMax);
 
   private final MoveTalonWithLeftJoystick moveTalonWithLeftJoystick = new MoveTalonWithLeftJoystick(leftTalon);
   private final MoveTalonsWithRightJoystick moveTalonWithRightJoystick = new MoveTalonsWithRightJoystick(groupedTalons);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    groupedTalons.setDefaultCommand(moveTalonWithRightJoystick);
+    leftTalon.setDefaultCommand(moveTalonWithLeftJoystick);
+    rightTalon.setDefaultCommand(rightTalonStop);
+    victor.setDefaultCommand(victorStop);
+    sparkMax.setDefaultCommand(sparkMaxStop);
     // Configure the button bindings
     configureButtonBindings();
   }

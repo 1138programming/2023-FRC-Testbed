@@ -5,16 +5,14 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
-import frc.robot.subsystems.GroupedTalons;
+import frc.robot.subsystems.RightTalon;
 
-public class MoveTalonsWithRightJoystick extends CommandBase {
-  private GroupedTalons groupedTalons;
-  /** Creates a new MoveTalonWithJoystick. */
-  public MoveTalonsWithRightJoystick(GroupedTalons groupedTalons) {
-    this.groupedTalons = groupedTalons;
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(groupedTalons);
+public class RightTalonStop extends CommandBase {
+  private RightTalon talon;
+  /** Creates a new RightTalonStop. */
+  public RightTalonStop(RightTalon talon) {
+    this.talon = talon;
+    addRequirements(talon);
   }
 
   // Called when the command is initially scheduled.
@@ -24,8 +22,7 @@ public class MoveTalonsWithRightJoystick extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    groupedTalons.moveLeft(Robot.m_robotContainer.getXboxLeftYAxis());
-    groupedTalons.moveRight(Robot.m_robotContainer.getXboxRightYAxis());
+    talon.move(0);
   }
 
   // Called once the command ends or is interrupted.
