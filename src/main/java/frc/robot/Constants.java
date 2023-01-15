@@ -80,9 +80,14 @@ public final class Constants {
     -KWheelDistanceFromCenter, -KWheelDistanceFromCenter
   );
 
-  public static final boolean KFrontLeftInversion = false;
-  public static final boolean KFrontRightInversion = false;
-  public static final boolean KBackLeftInversion = false;
-  public static final boolean KBackRightInversion = false;
+  public static final boolean KFrontLeftDriveReversed = false;
+  public static final boolean KFrontRightDriveReversed = false;
+  public static final boolean KBackLeftDriveReversed = false;
+  public static final boolean KBackRightDriveReversed = false;
+
+  public static final boolean KFrontLeftAngleReversed = false;
+  public static final boolean KFrontRightAngleReversed = false;
+  public static final boolean KBackLeftAngleReversed = false;
+  public static final boolean KBackRightAngleReversed = false;
 }
         

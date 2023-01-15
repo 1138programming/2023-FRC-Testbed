@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
+import frc.robot.subsystems.SwerveModule;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -52,28 +53,32 @@ public class Base extends SubsystemBase {
       new CANSparkMax(KFrontLeftDriveID, MotorType.kBrushless),
       new DutyCycleEncoder(KFrontLeftMagEncoderID),
       Rotation2d.fromDegrees(KFrontLeftOffset),
-      KFrontLeftInversion
+      KFrontLeftDriveReversed,
+      KFrontLeftAngleReversed
     );
     frontRightModule = new SwerveModule(
       new CANSparkMax(KFrontRightAngleID, MotorType.kBrushless), 
       new CANSparkMax(KFrontRightDriveID, MotorType.kBrushless), 
       new DutyCycleEncoder(KFrontRightMagEncoderID), 
       Rotation2d.fromDegrees(KFrontRightOffset),
-      KFrontRightInversion
+      KFrontRightDriveReversed,
+      KFrontRightAngleReversed
     );
     backLeftModule = new SwerveModule(
       new CANSparkMax(KBackLeftAngleID, MotorType.kBrushless), 
       new CANSparkMax(KBackLeftDriveID, MotorType.kBrushless), 
       new DutyCycleEncoder(KBackLeftMagEncoderID), 
       Rotation2d.fromDegrees(KBackLeftOffset),
-      KBackLeftInversion
+      KBackLeftDriveReversed,
+      KBackLeftAngleReversed
     );
     backRightModule = new SwerveModule(
       new CANSparkMax(KBackRightAngleID, MotorType.kBrushless), 
       new CANSparkMax(KBackRightDriveID, MotorType.kBrushless), 
       new DutyCycleEncoder(KBackRightMagEncoderID), 
       Rotation2d.fromDegrees(KBackRightOffset),
-      KBackRightInversion
+      KBackRightDriveReversed,
+      KBackRightAngleReversed
     );
 
     kinematics = new SwerveDriveKinematics(
@@ -85,8 +90,6 @@ public class Base extends SubsystemBase {
     generateOdometryLog = false;
     startTime = RobotController.getFPGATime();
     odometryData = new ArrayList<String>();
-
-    // backLeftModule.setAbsoluteOffset(.015);
   }
 
   // public void resetAbsolute() {
@@ -191,11 +194,6 @@ public class Base extends SubsystemBase {
     SmartDashboard.putNumber("back left mag", backLeftModule.getMagRotations());
     SmartDashboard.putNumber("back right mag", backRightModule.getMagRotations());
 
-    SmartDashboard.putNumber("front left RAW", frontLeftModule.getAngleDegRaw());
-    SmartDashboard.putNumber("front right RAW", frontRightModule.getAngleDegRaw());
-    SmartDashboard.putNumber("back left RAW", backLeftModule.getAngleDegRaw());
-    SmartDashboard.putNumber("back right RAW", backRightModule.getAngleDegRaw());
-
     SmartDashboard.putNumber("front left big", frontLeftModule.getAbsoluteOffset());
     SmartDashboard.putNumber("front right big", frontRightModule.getAbsoluteOffset());
     SmartDashboard.putNumber("back left big", backLeftModule.getAbsoluteOffset());
@@ -210,161 +208,6 @@ public class Base extends SubsystemBase {
       genOdometryData();
     }
   }
-  
-  class SwerveModule {
-    private CANSparkMax angleMotor;
-    private CANSparkMax driveMotor; 
-
-    private DutyCycleEncoder magEncoder;
-    private RelativeEncoder driveEncoder;
-    private RelativeEncoder angleEncoder;
-
-    private PIDController driveController;
-    private PIDController angleController;
-
-    private Rotation2d offset;
-
-    private boolean isInverted;
-    
-    SwerveModule(CANSparkMax angleMotor, CANSparkMax driveMotor, DutyCycleEncoder magEncoder, Rotation2d offset, boolean isInverted) {
-      angleMotor.setIdleMode(IdleMode.kBrake);
-      driveMotor.setIdleMode(IdleMode.kBrake);
-      this.angleMotor = angleMotor;
-      this.driveMotor = driveMotor;
-
-      this.magEncoder = magEncoder;
-      driveEncoder = driveMotor.getEncoder();
-      angleEncoder = angleMotor.getEncoder();
-      driveEncoder.setPositionConversionFactor(KDriveMotorRotToMeter);
-      driveEncoder.setVelocityConversionFactor(KDriveMotorRPMToMetersPerSec);
-      angleEncoder.setPositionConversionFactor(KAngleMotorRotToDeg);
-
-      driveController = new PIDController(KDriveP, KDriveI, KDriveD);
-      angleController = new PIDController(KAngleP, KAngleI, KAngleD);
-      angleController.enableContinuousInput(-180, 180); // Tells PIDController that 180 deg is same in both directions
-
-      this.offset = offset;
-      setAbsoluteOffset(offset.getDegrees());
-
-      this.isInverted = isInverted;
-    }
-
-    public void setDesiredState(SwerveModuleState desiredState) {
-      double angleMotorOutput;
-      double driveMotorOutput;
-
-      // If no controller input, set angle and drive motor to 0
-      if (Math.abs(desiredState.speedMetersPerSecond) < 0.001) {
-        angleMotor.set(0);
-        driveMotor.set(0);
-        return;
-      }
-
-      Rotation2d currentAngleR2D = getAngleR2D();
-      desiredState = SwerveModuleState.optimize(desiredState, currentAngleR2D);
-
-      // Angle calculation
-      Rotation2d rotationDelta = desiredState.angle.minus(currentAngleR2D);
-      double deltaDeg = rotationDelta.getDegrees();
-
-      if (Math.abs(deltaDeg) < 2) {
-        angleMotorOutput = 0;
-      }
-      else {
-        angleMotorOutput = angleController.calculate(getAngleDeg(), desiredState.angle.getDegrees());
-      }
-      angleMotor.set(angleMotorOutput);
-
-      // Drive calculation
-      driveMotorOutput = desiredState.speedMetersPerSecond / KPhysicalMaxDriveSpeedMPS;
-
-      if (isInverted) {
-        driveMotorOutput *= -1;
-      }
-
-      driveMotor.set(driveMotorOutput);
-    }
-
-    public void setDriveGains() {
-      driveController.setP(SmartDashboard.getNumber("drive kp", 0));
-      driveController.setI(SmartDashboard.getNumber("drive ki", 0));
-      driveController.setD(SmartDashboard.getNumber("drive kd", 0));
-    }
-
-    public void setAngleGains() {
-      angleController.setP(SmartDashboard.getNumber("angle kp", 0));
-      angleController.setI(SmartDashboard.getNumber("angle ki", 0));
-      angleController.setD(SmartDashboard.getNumber("angle kd", 0));
-    }
-
-    public void resetRelEncoders() {
-      driveEncoder.setPosition(0);
-      // double angle = getAngleDegRaw();
-      // if (angle < 0) {
-      //   angle = 360 + angle;
-      // }
-      angleEncoder.setPosition(getMagRotations() * 360);
-    }
-
-    public void setAbsoluteOffset(double offset) {
-      // magEncoder.setPositionOffset(offset);
-    }
-    public double getAbsoluteOffset() {
-      return magEncoder.getPositionOffset();
-    }
-
-    // Drive Encoder getters
-    public double getDriveEncoderPos() {
-      return driveEncoder.getPosition();
-    }
-    // public void resetAbsolute() {
-    //   magEncoder.reset();
-    // }
-    public double getDriveEncoderVel() {
-      return driveEncoder.getVelocity();
-    }
-
-    // Angle Encoder getters
-    public double getMagRotations() {
-      double pos = magEncoder.get() % 1;
-      if (pos < 0) {
-        pos += 1;
-      }
-      pos = 1 - pos;
-      return pos;
-    }
-    // public double getMagRotationsWithOffset() {
-    //   double pos = getMagRotations() - magEncoder.getPositionOffset();
-    //   if (pos < 0) {
-    //     pos += 1;
-    //   }
-    //   return pos;
-    // }
-    public double getAngleDegRaw() {
-      double angle = getMagRotations() * 360 % 360;
-      // if (angle > 180) {
-      //   angle -= 360;
-      // } else if (angle < -180) {
-      //   angle += 360;
-      // }
-      SmartDashboard.putNumber("BROOO", angle);
-      return angle;
-    }
-    
-    public double getAngleDeg() {
-      return angleEncoder.getPosition() % 360;
-      // SmartDashboard.putNumber("getName()", KAngleD)
-      // return getMagRotations() * 360;
-      // if (angle > 180) {
-      //   angle = Math.abs(angle) - 360;
-      // } /*else if (angle < -180) {
-      //   angle += 360;
-      // }*/
-      // return angle;
-    }
-
-    public Rotation2d getAngleR2D() {
-      return Rotation2d.fromDegrees(getAngleDeg()); 
-    }
-  }
 }
+  
+  

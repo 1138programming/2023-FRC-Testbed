@@ -7,9 +7,6 @@ package frc.robot.commands.Base;
 import frc.robot.Robot;
 import frc.robot.subsystems.Base;
 import static frc.robot.Constants.*;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DriveWithJoysticks extends CommandBase {
@@ -49,9 +46,9 @@ public class DriveWithJoysticks extends CommandBase {
   public void execute() {
     fbSpeed = Robot.m_robotContainer.getLogiLeftYAxis();
     
-    lrSpeed = -Robot.m_robotContainer.getLogiLeftXAxis();
+    lrSpeed = Robot.m_robotContainer.getLogiLeftXAxis();
     
-    rot = -Robot.m_robotContainer.getLogiRightXAxis();
+    rot = Robot.m_robotContainer.getLogiRightXAxis();
     
     // if (Math.abs(rot) <= 0.01 && (Math.abs(fbSpeed) >= 0.01 || Math.abs(lrSpeed) >= 0.01)) {
     //   rot = rotationCorrectionPID.calculate(base.getHeadingDeg(), initHeading);
