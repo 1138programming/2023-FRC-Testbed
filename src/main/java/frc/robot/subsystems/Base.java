@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -16,7 +17,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Base extends SubsystemBase {
-
   private SwerveModule frontLeftModule;
   private SwerveModule frontRightModule;
   private SwerveModule backLeftModule;
@@ -44,8 +43,10 @@ public class Base extends SubsystemBase {
   private boolean generateOdometryLog;
   private long startTime;
   private ArrayList<String> odometryData;
-
+  
   public Base() {
+    gyro = new AHRS(SPI.Port.kMXP);
+    gyro.reset();
     frontLeftModule = new SwerveModule(
       new CANSparkMax(KFrontLeftAngleID, MotorType.kBrushless),
       new CANSparkMax(KFrontLeftDriveID, MotorType.kBrushless),
@@ -80,13 +81,20 @@ public class Base extends SubsystemBase {
       KBackLeftLocation, KBackRightLocation
     );
     odometry = new SwerveDriveOdometry(kinematics, getHeading(), getPositions());
-    gyro = new AHRS(SPI.Port.kMXP);
-    gyro.reset();
 
     generateOdometryLog = false;
     startTime = RobotController.getFPGATime();
     odometryData = new ArrayList<String>();
+
+    // backLeftModule.setAbsoluteOffset(.015);
   }
+
+  // public void resetAbsolute() {
+  //   frontLeftModule.resetAbsolute();
+  //   frontRightModule.resetAbsolute();
+  //   backLeftModule.resetAbsolute();
+  //   backRightModule.resetAbsolute();
+  // }
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double maxDriveSpeedMPS) {
     xSpeed *= maxDriveSpeedMPS;
@@ -98,6 +106,7 @@ public class Base extends SubsystemBase {
       kinematics.toSwerveModuleStates(
         fieldRelative
           ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(gyro.getAngle()))
+          // ? new ChassisSpeeds(xSpeed, ySpeed, rot)
           : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(states, KPhysicalMaxDriveSpeedMPS);
 
@@ -108,7 +117,7 @@ public class Base extends SubsystemBase {
     backRightModule.setDesiredState(states[3]);
 }
 
-  //recalibrates gyro offset
+  // recalibrates gyro offset
   public void resetGyro() {
     gyro.reset(); 
     gyro.setAngleAdjustment(0);
@@ -143,6 +152,9 @@ public class Base extends SubsystemBase {
   public void setGenerateOdometryLog(boolean generateOdometryLog) {
     this.generateOdometryLog = generateOdometryLog;
   }
+  public boolean getGenerateOdometryLog() {
+    return generateOdometryLog;
+  }
 
   private void genOdometryData() {
     long time =  RobotController.getFPGATime() - startTime;
@@ -153,7 +165,7 @@ public class Base extends SubsystemBase {
   }
 
   public void writeOdometryData() {
-    try {  
+    try {
       FileWriter writer = new FileWriter("OdometryLog.txt");
       for (int i = 0; i < 1000; i++) {
         writer.write(odometryData.get(i));
@@ -162,11 +174,36 @@ public class Base extends SubsystemBase {
     } catch (IOException e) {
       System.out.println("An error occurred.");
       e.printStackTrace();
-    } 
+    }
   }
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Gyro", gyro.getAngle());
+
+    SmartDashboard.putNumber("Front left module", frontLeftModule.getAngleDeg());
+    SmartDashboard.putNumber("Front right module", frontRightModule.getAngleDeg());
+    SmartDashboard.putNumber("Back left module", backLeftModule.getAngleDeg());
+    SmartDashboard.putNumber("Back right module", backRightModule.getAngleDeg());
+
+    SmartDashboard.putNumber("front left mag", frontLeftModule.getMagRotations());
+    SmartDashboard.putNumber("front right mag", frontRightModule.getMagRotations());
+    SmartDashboard.putNumber("back left mag", backLeftModule.getMagRotations());
+    SmartDashboard.putNumber("back right mag", backRightModule.getMagRotations());
+
+    SmartDashboard.putNumber("front left RAW", frontLeftModule.getAngleDegRaw());
+    SmartDashboard.putNumber("front right RAW", frontRightModule.getAngleDegRaw());
+    SmartDashboard.putNumber("back left RAW", backLeftModule.getAngleDegRaw());
+    SmartDashboard.putNumber("back right RAW", backRightModule.getAngleDegRaw());
+
+    SmartDashboard.putNumber("front left big", frontLeftModule.getAbsoluteOffset());
+    SmartDashboard.putNumber("front right big", frontRightModule.getAbsoluteOffset());
+    SmartDashboard.putNumber("back left big", backLeftModule.getAbsoluteOffset());
+    SmartDashboard.putNumber("back right big", backRightModule.getAbsoluteOffset());
+
+    SmartDashboard.putNumber("odometry X", odometry.getPoseMeters().getX());
+    SmartDashboard.putNumber("odometry Y", odometry.getPoseMeters().getY());
+
     pose = odometry.update(getHeading(), getPositions());
 
     if (generateOdometryLog && odometryData.size() < 1000) {
@@ -188,7 +225,7 @@ public class Base extends SubsystemBase {
     private Rotation2d offset;
 
     private boolean isInverted;
-
+    
     SwerveModule(CANSparkMax angleMotor, CANSparkMax driveMotor, DutyCycleEncoder magEncoder, Rotation2d offset, boolean isInverted) {
       angleMotor.setIdleMode(IdleMode.kBrake);
       driveMotor.setIdleMode(IdleMode.kBrake);
@@ -207,6 +244,7 @@ public class Base extends SubsystemBase {
       angleController.enableContinuousInput(-180, 180); // Tells PIDController that 180 deg is same in both directions
 
       this.offset = offset;
+      setAbsoluteOffset(offset.getDegrees());
 
       this.isInverted = isInverted;
     }
@@ -235,6 +273,7 @@ public class Base extends SubsystemBase {
       else {
         angleMotorOutput = angleController.calculate(getAngleDeg(), desiredState.angle.getDegrees());
       }
+      angleMotor.set(angleMotorOutput);
 
       // Drive calculation
       driveMotorOutput = desiredState.speedMetersPerSecond / KPhysicalMaxDriveSpeedMPS;
@@ -243,47 +282,87 @@ public class Base extends SubsystemBase {
         driveMotorOutput *= -1;
       }
 
-      angleMotor.set(angleMotorOutput);
       driveMotor.set(driveMotorOutput);
     }
 
     public void setDriveGains() {
       driveController.setP(SmartDashboard.getNumber("drive kp", 0));
-      driveController.setP(SmartDashboard.getNumber("drive ki", 0));
-      driveController.setP(SmartDashboard.getNumber("drive kd", 0));
+      driveController.setI(SmartDashboard.getNumber("drive ki", 0));
+      driveController.setD(SmartDashboard.getNumber("drive kd", 0));
     }
 
     public void setAngleGains() {
-      driveController.setP(SmartDashboard.getNumber("angle kp", 0));
-      driveController.setP(SmartDashboard.getNumber("angle ki", 0));
-      driveController.setP(SmartDashboard.getNumber("angle kd", 0));
+      angleController.setP(SmartDashboard.getNumber("angle kp", 0));
+      angleController.setI(SmartDashboard.getNumber("angle ki", 0));
+      angleController.setD(SmartDashboard.getNumber("angle kd", 0));
     }
 
     public void resetRelEncoders() {
       driveEncoder.setPosition(0);
-      angleEncoder.setPosition(getAngleDegRaw() - offset.getDegrees());
+      // double angle = getAngleDegRaw();
+      // if (angle < 0) {
+      //   angle = 360 + angle;
+      // }
+      angleEncoder.setPosition(getMagRotations() * 360);
+    }
+
+    public void setAbsoluteOffset(double offset) {
+      // magEncoder.setPositionOffset(offset);
+    }
+    public double getAbsoluteOffset() {
+      return magEncoder.getPositionOffset();
     }
 
     // Drive Encoder getters
     public double getDriveEncoderPos() {
       return driveEncoder.getPosition();
     }
+    // public void resetAbsolute() {
+    //   magEncoder.reset();
+    // }
     public double getDriveEncoderVel() {
       return driveEncoder.getVelocity();
     }
 
     // Angle Encoder getters
     public double getMagRotations() {
-      return magEncoder.get();
+      double pos = magEncoder.get() % 1;
+      if (pos < 0) {
+        pos += 1;
+      }
+      pos = 1 - pos;
+      return pos;
     }
+    // public double getMagRotationsWithOffset() {
+    //   double pos = getMagRotations() - magEncoder.getPositionOffset();
+    //   if (pos < 0) {
+    //     pos += 1;
+    //   }
+    //   return pos;
+    // }
     public double getAngleDegRaw() {
       double angle = getMagRotations() * 360 % 360;
+      // if (angle > 180) {
+      //   angle -= 360;
+      // } else if (angle < -180) {
+      //   angle += 360;
+      // }
+      SmartDashboard.putNumber("BROOO", angle);
       return angle;
     }
     
     public double getAngleDeg() {
       return angleEncoder.getPosition() % 360;
+      // SmartDashboard.putNumber("getName()", KAngleD)
+      // return getMagRotations() * 360;
+      // if (angle > 180) {
+      //   angle = Math.abs(angle) - 360;
+      // } /*else if (angle < -180) {
+      //   angle += 360;
+      // }*/
+      // return angle;
     }
+
     public Rotation2d getAngleR2D() {
       return Rotation2d.fromDegrees(getAngleDeg()); 
     }

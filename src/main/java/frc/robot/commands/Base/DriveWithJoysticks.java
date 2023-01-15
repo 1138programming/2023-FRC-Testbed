@@ -20,12 +20,12 @@ public class DriveWithJoysticks extends CommandBase {
   private double lrSpeed; //Speed of the robot in the Y direction (sideways).
   private double rot;
 
-  private PIDController rotationCorrectionPID;
-  private double initHeading;
+  // private PIDController rotationCorrectionPID;
+  // private double initHeading;
 
-  private double kRotationP = 0.005;
-  private double kRotationI = 0;
-  private double kRotationD = 0;
+  // private double kRotationP = 0.005;
+  // private double kRotationI = 0;
+  // private double kRotationD = 0;
   
   private double maxDriveSpeed = KPhysicalMaxDriveSpeedMPS * KBaseDriveLowPercent;
 
@@ -33,7 +33,7 @@ public class DriveWithJoysticks extends CommandBase {
   public DriveWithJoysticks(Base base) {
     this.base = base;
   
-    rotationCorrectionPID = new PIDController(kRotationP, kRotationI, kRotationD);
+    // rotationCorrectionPID = new PIDController(kRotationP, kRotationI, kRotationD);
 
     addRequirements(base);
   }
@@ -42,25 +42,26 @@ public class DriveWithJoysticks extends CommandBase {
   @Override
   public void initialize() {
     base.resetAllRelEncoders();  
-    initHeading = base.getHeadingDeg();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    fbSpeed = (Robot.m_robotContainer.getLogiLeftYAxis());
+    fbSpeed = Robot.m_robotContainer.getLogiLeftYAxis();
     
-    lrSpeed = (Robot.m_robotContainer.getLogiLeftXAxis());
+    lrSpeed = -Robot.m_robotContainer.getLogiLeftXAxis();
     
-    rot = (Robot.m_robotContainer.getLogiRightXAxis());
+    rot = -Robot.m_robotContainer.getLogiRightXAxis();
     
-    if (Math.abs(rot) <= 0.01 && (Math.abs(fbSpeed) >= 0.01 || Math.abs(lrSpeed) >= 0.01)) {
-      rot = rotationCorrectionPID.calculate(base.getHeadingDeg(), initHeading);
-    }
-    else {
-      initHeading = base.getHeadingDeg();
-    }
-    base.drive(fbSpeed, lrSpeed, rot, true, maxDriveSpeed);
+    // if (Math.abs(rot) <= 0.01 && (Math.abs(fbSpeed) >= 0.01 || Math.abs(lrSpeed) >= 0.01)) {
+    //   rot = rotationCorrectionPID.calculate(base.getHeadingDeg(), initHeading);
+    // }
+    // else {
+    //   initHeading = base.getHeadingDeg();
+    // }
+    base.drive(fbSpeed, lrSpeed, rot, false, maxDriveSpeed);
+
+    // SmartDashboard.putNumber(getName(), KAngleD)
   }
 
   // Called once the command ends or is interrupted.

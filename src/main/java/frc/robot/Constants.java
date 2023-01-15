@@ -17,13 +17,13 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   //Swerve Module
-  public static final double KAngleP = 0;
+  public static final double KAngleP = 0.006;
   public static final double KAngleI = 0;
   public static final double KAngleD = 0;
   
-  public static final double KDriveP = 0;
-  public static final double KDriveI = 0;
-  public static final double KDriveD = 0;
+  public static final double KDriveP = 0.2;
+  public static final double KDriveI = 0.75;
+  public static final double KDriveD = 0.005;
   
   public static final double KDegPerRotation = 360;
   
@@ -42,30 +42,30 @@ public final class Constants {
 
   
   //Base
-  public static final int KFrontLeftAngleID = 1;
-  public static final int KFrontLeftDriveID = 2;
+  public static final int KFrontLeftAngleID = 5;
+  public static final int KFrontLeftDriveID = 4;
   
-  public static final int KFrontRightAngleID = 3;
-  public static final int KFrontRightDriveID = 4;
+  public static final int KFrontRightAngleID = 7;
+  public static final int KFrontRightDriveID = 6;
   
-  public static final int KBackLeftAngleID = 5;
-  public static final int KBackLeftDriveID = 6;
+  public static final int KBackLeftAngleID = 2;
+  public static final int KBackLeftDriveID = 3;
   
-  public static final int KBackRightAngleID = 7;
+  public static final int KBackRightAngleID = 1;
   public static final int KBackRightDriveID = 8;
   
   
-  public static final double KFrontLeftOffset = 0;
-  public static final double KFrontRightOffset = 0;
-  public static final double KBackLeftOffset = 0;
-  public static final double KBackRightOffset = 0;
+  public static final double KFrontLeftOffset = 0.886;
+  public static final double KFrontRightOffset = 0.9096;
+  public static final double KBackLeftOffset = 0.353;
+  public static final double KBackRightOffset = 0.829;
   
-  public static final int KFrontLeftMagEncoderID = 1;
-  public static final int KFrontRightMagEncoderID = 2;
-  public static final int KBackLeftMagEncoderID = 3;
-  public static final int KBackRightMagEncoderID = 4;
+  public static final int KFrontLeftMagEncoderID = 7;
+  public static final int KFrontRightMagEncoderID = 5;
+  public static final int KBackLeftMagEncoderID = 2;
+  public static final int KBackRightMagEncoderID = 0;
   
-  public static final double KWheelDistanceFromCenter = 0.3683;
+  public static final double KWheelDistanceFromCenter = 0.29845;
   
   public static final Translation2d KFrontLeftLocation = new Translation2d(
     KWheelDistanceFromCenter, KWheelDistanceFromCenter

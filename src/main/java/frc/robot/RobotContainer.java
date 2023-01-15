@@ -8,6 +8,11 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.Base.DriveWithJoysticks;
+import frc.robot.commands.Base.ResetEncoders;
+import frc.robot.commands.Base.ToggleGenerateOdometryLog;
+import frc.robot.commands.Base.WriteOdometryLog;
+import frc.robot.subsystems.Base;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -22,8 +27,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final Base base = new Base();
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+
+  private final DriveWithJoysticks driveWithJoysticks = new DriveWithJoysticks(base);
+  private final ToggleGenerateOdometryLog toggleGenerateOdometryLog = new ToggleGenerateOdometryLog(base);
+  private final WriteOdometryLog writeOdometryLog = new WriteOdometryLog(base);
 
   //Controller Ports (check in Driver Station, IDs may be different for each computer)
   private static final int KLogitechPort = 0;
@@ -62,7 +72,7 @@ public class RobotContainer {
 
   //Game Controllers
   public static Joystick logitech;
-  public static XboxController xbox; 
+  // public static XboxController xbox; 
   //Controller Buttons/Triggers
   public JoystickButton logitechBtnX, logitechBtnA, logitechBtnB, logitechBtnY, logitechBtnLB, logitechBtnRB, logitechBtnLT, logitechBtnRT; //Logitech Button
   public JoystickButton xboxBtnA, xboxBtnB, xboxBtnX, xboxBtnY, xboxBtnLB, xboxBtnRB, xboxBtnStrt, xboxBtnSelect;
@@ -70,11 +80,11 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-
+    base.setDefaultCommand(driveWithJoysticks);
 
     //Game controllers
     logitech = new Joystick(KLogitechPort); //Logitech Dual Action
-    xbox = new XboxController(KXboxPort);   //Xbox 360 for Windows
+    // xbox = new XboxController(KXboxPort);   //Xbox 360 for Windows
 
     // Logitch Buttons 
     logitechBtnX = new JoystickButton(logitech, KLogitechButtonX);
@@ -87,14 +97,14 @@ public class RobotContainer {
     logitechBtnRT = new JoystickButton(logitech, KLogitechRightTrigger);
 
     // XBox Buttons
-    xboxBtnA = new JoystickButton(xbox, KXboxButtonA);
-  	xboxBtnB = new JoystickButton(xbox, KXboxButtonB);
-		xboxBtnX = new JoystickButton(xbox, KXboxButtonX);
-		xboxBtnY = new JoystickButton(xbox, KXboxButtonY);
-		xboxBtnLB = new JoystickButton(xbox, KXboxLeftBumper);
-    xboxBtnRB = new JoystickButton(xbox, KXboxRightBumper);
-    xboxBtnSelect = new JoystickButton(xbox, KXboxSelectButton);
-		xboxBtnStrt = new JoystickButton(xbox, KXboxStartButton);
+    // xboxBtnA = new JoystickButton(xbox, KXboxButtonA);
+  	// xboxBtnB = new JoystickButton(xbox, KXboxButtonB);
+		// xboxBtnX = new JoystickButton(xbox, KXboxButtonX);
+		// xboxBtnY = new JoystickButton(xbox, KXboxButtonY);
+		// xboxBtnLB = new JoystickButton(xbox, KXboxLeftBumper);
+    // xboxBtnRB = new JoystickButton(xbox, KXboxRightBumper);
+    // xboxBtnSelect = new JoystickButton(xbox, KXboxSelectButton);
+		// xboxBtnStrt = new JoystickButton(xbox, KXboxStartButton);
     // xboxBtnLT = new Trigger(() -> (joystickThreshold(xbox.getRawAxis(KXboxLeftTrigger))));
     // xboxBtnRT = new Trigger(() -> (joystickThreshold(xbox.getRawAxis(KXboxRightTrigger))));
     // Configure the button bindings
@@ -108,11 +118,12 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    
+    logitechBtnA.onTrue(toggleGenerateOdometryLog);
+    logitechBtnB.onTrue(writeOdometryLog);
+    logitechBtnY.onTrue(new ResetEncoders(base));
 
-    
     // Configure the button bindings
-    configureButtonBindings();
+    // configureButtonBindings();
   }
 
   /**
@@ -163,45 +174,45 @@ public class RobotContainer {
     }
   }
 
-  public double getXboxLeftAxis() {
-    final double Y = xbox.getRawAxis(KLeftYAxis);
-    if(Y > KDeadZone || Y < -KDeadZone)
-      return -Y;
-    else 
-      return 0;
-  }
+  // public double getXboxLeftAxis() {
+  //   final double Y = xbox.getRawAxis(KLeftYAxis);
+  //   if(Y > KDeadZone || Y < -KDeadZone)
+  //     return -Y;
+  //   else 
+  //     return 0;
+  // }
 
-  public double getXboxLeftXAxis() {
-    final double X = xbox.getRawAxis(KRightXAxis);
-    if(X > KDeadZone || X < -KDeadZone)
-      return X;
-    else 
-      return 0;
-  }
+  // public double getXboxLeftXAxis() {
+  //   final double X = xbox.getRawAxis(KRightXAxis);
+  //   if(X > KDeadZone || X < -KDeadZone)
+  //     return X;
+  //   else 
+  //     return 0;
+  // }
 
-  public double getXboxRightXAxis() {
-    final double X = xbox.getRawAxis(KRightXAxis);
-    if (X > KDeadZone || X < -KDeadZone)
-      return -X;
-    else
-      return 0;
-  }
+  // public double getXboxRightXAxis() {
+  //   final double X = xbox.getRawAxis(KRightXAxis);
+  //   if (X > KDeadZone || X < -KDeadZone)
+  //     return -X;
+  //   else
+  //     return 0;
+  // }
 
-  public double getXboxLeftYAxis() {
-    final double Y = xbox.getRawAxis(KLeftYAxis);
-    if(Y > KDeadZone || Y < -KDeadZone)
-      return -Y;
-    else 
-      return 0;
-  }
+  // public double getXboxLeftYAxis() {
+  //   final double Y = xbox.getRawAxis(KLeftYAxis);
+  //   if(Y > KDeadZone || Y < -KDeadZone)
+  //     return -Y;
+  //   else 
+  //     return 0;
+  // }
 
-  public double getXboxRightYAxis() {
-    final double Y = xbox.getRawAxis(KRightYAxis);
-    if (Y > KDeadZone || Y < -KDeadZone)
-      return -Y;
-    else
-      return 0;
-  }
+  // public double getXboxRightYAxis() {
+  //   final double Y = xbox.getRawAxis(KRightYAxis);
+  //   if (Y > KDeadZone || Y < -KDeadZone)
+  //     return -Y;
+  //   else
+  //     return 0;
+  // }
 public boolean joystickThreshold(double triggerValue) {
     if (Math.abs(triggerValue) < .09) 
       return false;
