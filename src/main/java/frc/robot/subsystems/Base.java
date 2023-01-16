@@ -41,6 +41,7 @@ public class Base extends SubsystemBase {
 
   private Pose2d pose;
   
+  private double driveSpeedFactor;
   private boolean generateOdometryLog;
   private long startTime;
   private ArrayList<String> odometryData;
@@ -52,7 +53,7 @@ public class Base extends SubsystemBase {
       new CANSparkMax(KFrontLeftAngleID, MotorType.kBrushless),
       new CANSparkMax(KFrontLeftDriveID, MotorType.kBrushless),
       new DutyCycleEncoder(KFrontLeftMagEncoderID),
-      Rotation2d.fromDegrees(KFrontLeftOffset),
+      KFrontLeftOffset,
       KFrontLeftDriveReversed,
       KFrontLeftAngleReversed
     );
@@ -60,7 +61,7 @@ public class Base extends SubsystemBase {
       new CANSparkMax(KFrontRightAngleID, MotorType.kBrushless), 
       new CANSparkMax(KFrontRightDriveID, MotorType.kBrushless), 
       new DutyCycleEncoder(KFrontRightMagEncoderID), 
-      Rotation2d.fromDegrees(KFrontRightOffset),
+      KFrontRightOffset,
       KFrontRightDriveReversed,
       KFrontRightAngleReversed
     );
@@ -68,7 +69,7 @@ public class Base extends SubsystemBase {
       new CANSparkMax(KBackLeftAngleID, MotorType.kBrushless), 
       new CANSparkMax(KBackLeftDriveID, MotorType.kBrushless), 
       new DutyCycleEncoder(KBackLeftMagEncoderID), 
-      Rotation2d.fromDegrees(KBackLeftOffset),
+      KBackLeftOffset,
       KBackLeftDriveReversed,
       KBackLeftAngleReversed
     );
@@ -76,7 +77,7 @@ public class Base extends SubsystemBase {
       new CANSparkMax(KBackRightAngleID, MotorType.kBrushless), 
       new CANSparkMax(KBackRightDriveID, MotorType.kBrushless), 
       new DutyCycleEncoder(KBackRightMagEncoderID), 
-      Rotation2d.fromDegrees(KBackRightOffset),
+      KBackRightOffset,
       KBackRightDriveReversed,
       KBackRightAngleReversed
     );
@@ -86,7 +87,7 @@ public class Base extends SubsystemBase {
       KBackLeftLocation, KBackRightLocation
     );
     odometry = new SwerveDriveOdometry(kinematics, getHeading(), getPositions());
-
+    driveSpeedFactor = KBaseDriveLowPercent;
     generateOdometryLog = false;
     startTime = RobotController.getFPGATime();
     odometryData = new ArrayList<String>();
@@ -98,6 +99,7 @@ public class Base extends SubsystemBase {
   //   backLeftModule.resetAbsolute();
   //   backRightModule.resetAbsolute();
   // }
+
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double maxDriveSpeedMPS) {
     xSpeed *= maxDriveSpeedMPS;
@@ -114,10 +116,10 @@ public class Base extends SubsystemBase {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, KPhysicalMaxDriveSpeedMPS);
 
     //setting module states, aka moving the motors
-    frontLeftModule.setDesiredState(states[0]);
-    frontRightModule.setDesiredState(states[1]);
-    backLeftModule.setDesiredState(states[2]);
-    backRightModule.setDesiredState(states[3]);
+    frontLeftModule.setDesiredState(states[2]);
+    frontRightModule.setDesiredState(states[3]);
+    backLeftModule.setDesiredState(states[0]);
+    backRightModule.setDesiredState(states[1]);
 }
 
   // recalibrates gyro offset
@@ -150,6 +152,10 @@ public class Base extends SubsystemBase {
 
   public double getHeadingDeg() {
     return gyro.getAngle();
+  }
+
+  public void resetOdometry() {
+    odometry.resetPosition(getHeading(), getPositions(), pose);
   }
 
   public void setGenerateOdometryLog(boolean generateOdometryLog) {
@@ -207,6 +213,15 @@ public class Base extends SubsystemBase {
     if (generateOdometryLog && odometryData.size() < 1000) {
       genOdometryData();
     }
+  }
+
+  public double getDriveSpeedFactor()
+  {
+    return driveSpeedFactor;
+  }
+  public void setDriveSpeedFactor(double set)
+  {
+    driveSpeedFactor = set;
   }
 }
   

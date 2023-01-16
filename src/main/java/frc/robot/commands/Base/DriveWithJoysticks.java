@@ -24,7 +24,7 @@ public class DriveWithJoysticks extends CommandBase {
   // private double kRotationI = 0;
   // private double kRotationD = 0;
   
-  private double maxDriveSpeed = KPhysicalMaxDriveSpeedMPS * KBaseDriveLowPercent;
+  private double maxDriveSpeed = KPhysicalMaxDriveSpeedMPS;
 
   /** Creates a new DriveWithJoysticks. */
   public DriveWithJoysticks(Base base) {
@@ -46,7 +46,7 @@ public class DriveWithJoysticks extends CommandBase {
   public void execute() {
     fbSpeed = Robot.m_robotContainer.getLogiLeftYAxis();
     
-    lrSpeed = Robot.m_robotContainer.getLogiLeftXAxis();
+    lrSpeed = -Robot.m_robotContainer.getLogiLeftXAxis();
     
     rot = Robot.m_robotContainer.getLogiRightXAxis();
     
@@ -56,7 +56,7 @@ public class DriveWithJoysticks extends CommandBase {
     // else {
     //   initHeading = base.getHeadingDeg();
     // }
-    base.drive(fbSpeed, lrSpeed, rot, false, maxDriveSpeed);
+    base.drive(fbSpeed, lrSpeed, rot, true, maxDriveSpeed);
 
     // SmartDashboard.putNumber(getName(), KAngleD)
   }
@@ -70,4 +70,6 @@ public class DriveWithJoysticks extends CommandBase {
   public boolean isFinished() {
     return false;
   }
+
+
 }

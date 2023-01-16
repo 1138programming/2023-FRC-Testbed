@@ -12,6 +12,7 @@ import frc.robot.commands.Base.ResetEncoders;
 import frc.robot.commands.Base.ToggleGenerateOdometryLog;
 import frc.robot.commands.Base.WriteOdometryLog;
 import frc.robot.subsystems.Base;
+import frc.robot.commands.Base.ToggleSpeed;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -29,6 +30,7 @@ public class RobotContainer {
   private final DriveWithJoysticks driveWithJoysticks = new DriveWithJoysticks(base);
   private final ToggleGenerateOdometryLog toggleGenerateOdometryLog = new ToggleGenerateOdometryLog(base);
   private final WriteOdometryLog writeOdometryLog = new WriteOdometryLog(base);
+  private final ToggleSpeed toggleSpeed = new ToggleSpeed(base);
 
   //Controller Ports (check in Driver Station, IDs may be different for each computer)
   private static final int KLogitechPort = 0;
@@ -116,7 +118,8 @@ public class RobotContainer {
     logitechBtnA.onTrue(toggleGenerateOdometryLog);
     logitechBtnB.onTrue(writeOdometryLog);
     logitechBtnY.onTrue(new ResetEncoders(base));
-
+    logitechBtnLB.onTrue(toggleSpeed);
+    logitechBtnLB.onFalse(toggleSpeed);
     // Configure the button bindings
     // configureButtonBindings();
   }

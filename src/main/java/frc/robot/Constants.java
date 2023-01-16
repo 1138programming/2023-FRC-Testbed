@@ -37,9 +37,8 @@ public final class Constants {
   public static final double KAngleMotorRotToDeg = 35;
   public static final double KNeoMaxRPM = 5700;
   public static final double KPhysicalMaxDriveSpeedMPS = KNeoMaxRPM * KDriveMotorRPMToMetersPerSec;
-  public static final double KBaseDriveLowPercent = 0.4;
   public static final double KMaxAngularSpeed = Math.PI;
-
+  
   
   //Base
   public static final int KFrontLeftAngleID = 5;
@@ -54,11 +53,13 @@ public final class Constants {
   public static final int KBackRightAngleID = 1;
   public static final int KBackRightDriveID = 8;
   
+  public static final double KBaseDriveLowPercent = 0.6;
+  public static final double KBaseDriveHighPercent = 1.0;
   
-  public static final double KFrontLeftOffset = 0.886;
-  public static final double KFrontRightOffset = 0.9096;
-  public static final double KBackLeftOffset = 0.353;
-  public static final double KBackRightOffset = 0.829;
+  public static final double KFrontLeftOffset = 0.686;
+  public static final double KFrontRightOffset = 0.6987;
+  public static final double KBackLeftOffset = 0.017;
+  public static final double KBackRightOffset = 0.139;
   
   public static final int KFrontLeftMagEncoderID = 7;
   public static final int KFrontRightMagEncoderID = 5;
@@ -83,7 +84,7 @@ public final class Constants {
   public static final boolean KFrontLeftDriveReversed = false;
   public static final boolean KFrontRightDriveReversed = false;
   public static final boolean KBackLeftDriveReversed = false;
-  public static final boolean KBackRightDriveReversed = false;
+  public static final boolean KBackRightDriveReversed = true;
 
   public static final boolean KFrontLeftAngleReversed = false;
   public static final boolean KFrontRightAngleReversed = false;

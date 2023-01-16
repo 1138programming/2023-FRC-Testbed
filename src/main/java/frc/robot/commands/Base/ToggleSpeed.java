@@ -6,26 +6,25 @@ package frc.robot.commands.Base;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Base;
-
-public class ResetEncoders extends CommandBase {
+import static frc.robot.Constants.*;
+public class ToggleSpeed extends CommandBase {
   private Base base;
-  /** Creates a new ResetEncoders. */
-  public ResetEncoders(Base base) {
+//   private 
+
+  public ToggleSpeed(Base base) {
     this.base = base;
     addRequirements(base);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    base.resetAllRelEncoders();
-    base.resetGyro();
-    base.resetOdometry();
+  public void initialize() 
+  {
+    if(base.getDriveSpeedFactor() == KBaseDriveHighPercent) base.setDriveSpeedFactor(KBaseDriveLowPercent);
+    else base.setDriveSpeedFactor(KBaseDriveHighPercent);
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
+  
 
   // Called once the command ends or is interrupted.
   @Override

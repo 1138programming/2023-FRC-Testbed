@@ -20,12 +20,9 @@ public class SwerveModule extends SubsystemBase {
   private RelativeEncoder driveEncoder;
   private RelativeEncoder angleEncoder;
 
-  private PIDController driveController;
   private PIDController angleController;
-
-  private Rotation2d offset;
     
-  public SwerveModule(CANSparkMax angleMotor, CANSparkMax driveMotor, DutyCycleEncoder magEncoder, Rotation2d offset, boolean driveMotorReversed, boolean angleMotorReversed) {
+  public SwerveModule(CANSparkMax angleMotor, CANSparkMax driveMotor, DutyCycleEncoder magEncoder, double offset, boolean driveMotorReversed, boolean angleMotorReversed) {
     angleMotor.setIdleMode(IdleMode.kBrake);
     driveMotor.setIdleMode(IdleMode.kBrake);
     this.angleMotor = angleMotor;
@@ -40,12 +37,10 @@ public class SwerveModule extends SubsystemBase {
     driveEncoder.setVelocityConversionFactor(KDriveMotorRPMToMetersPerSec);
     angleEncoder.setPositionConversionFactor(KAngleMotorRotToDeg);
 
-    driveController = new PIDController(KDriveP, KDriveI, KDriveD);
     angleController = new PIDController(KAngleP, KAngleI, KAngleD);
     angleController.enableContinuousInput(-180, 180); // Tells PIDController that 180 deg is same in both directions
 
-    this.offset = offset;
-    setAbsoluteOffset(offset.getDegrees());
+    setAbsoluteOffset(offset);
   }
 
   public void setDesiredState(SwerveModuleState desiredState) {
@@ -85,6 +80,7 @@ public class SwerveModule extends SubsystemBase {
   public void setAbsoluteOffset(double offset) {
     magEncoder.setPositionOffset(offset);
   }
+  
   public double getAbsoluteOffset() {
     return magEncoder.getPositionOffset();
   }
@@ -105,7 +101,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getMagDeg() {
-    return getMagRotations() * 360 % 360;
+    return -getMagRotations() * 360 % 360;
   }
 
   public double getAngleDeg() {
