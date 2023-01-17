@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.PistonSet;
+import static frc.robot.commands.PistonSet.SETCOMMAND;
+import frc.robot.subsystems.Piston;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -18,6 +21,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private final Piston piston = new Piston();
+  
+  private final PistonSet pistonSetForward = new PistonSet(piston,SETCOMMAND.FORWARD);
+  private final PistonSet pistonSetBackward = new PistonSet(piston,SETCOMMAND.BACKWARD);
+  private final PistonSet pistonSetOff = new PistonSet(piston,SETCOMMAND.OFF);
 
   //Controller Ports (check in Driver Station, IDs may be different for each computer)
   private static final int KLogitechPort = 0;
@@ -56,7 +64,7 @@ public class RobotContainer {
 
   //Game Controllers
   public static Joystick logitech;
-  // public static XboxController xbox; 
+  public static XboxController xbox; 
   //Controller Buttons/Triggers
   public JoystickButton logitechBtnX, logitechBtnA, logitechBtnB, logitechBtnY, logitechBtnLB, logitechBtnRB, logitechBtnLT, logitechBtnRT; //Logitech Button
   public JoystickButton xboxBtnA, xboxBtnB, xboxBtnX, xboxBtnY, xboxBtnLB, xboxBtnRB, xboxBtnStrt, xboxBtnSelect;
@@ -66,7 +74,7 @@ public class RobotContainer {
   public RobotContainer() {
     //Game controllers
     logitech = new Joystick(KLogitechPort); //Logitech Dual Action
-    // xbox = new XboxController(KXboxPort);   //Xbox 360 for Windows
+    xbox = new XboxController(KXboxPort);   //Xbox 360 for Windows
 
     // Logitch Buttons 
     logitechBtnX = new JoystickButton(logitech, KLogitechButtonX);
@@ -79,16 +87,16 @@ public class RobotContainer {
     logitechBtnRT = new JoystickButton(logitech, KLogitechRightTrigger);
 
     // XBox Buttons
-    // xboxBtnA = new JoystickButton(xbox, KXboxButtonA);
-  	// xboxBtnB = new JoystickButton(xbox, KXboxButtonB);
-		// xboxBtnX = new JoystickButton(xbox, KXboxButtonX);
-		// xboxBtnY = new JoystickButton(xbox, KXboxButtonY);
-		// xboxBtnLB = new JoystickButton(xbox, KXboxLeftBumper);
-    // xboxBtnRB = new JoystickButton(xbox, KXboxRightBumper);
-    // xboxBtnSelect = new JoystickButton(xbox, KXboxSelectButton);
-		// xboxBtnStrt = new JoystickButton(xbox, KXboxStartButton);
-    // xboxBtnLT = new Trigger(() -> (joystickThreshold(xbox.getRawAxis(KXboxLeftTrigger))));
-    // xboxBtnRT = new Trigger(() -> (joystickThreshold(xbox.getRawAxis(KXboxRightTrigger))));
+    xboxBtnA = new JoystickButton(xbox, KXboxButtonA);
+  	xboxBtnB = new JoystickButton(xbox, KXboxButtonB);
+		xboxBtnX = new JoystickButton(xbox, KXboxButtonX);
+		xboxBtnY = new JoystickButton(xbox, KXboxButtonY);
+		xboxBtnLB = new JoystickButton(xbox, KXboxLeftBumper);
+    xboxBtnRB = new JoystickButton(xbox, KXboxRightBumper);
+    xboxBtnSelect = new JoystickButton(xbox, KXboxSelectButton);
+		xboxBtnStrt = new JoystickButton(xbox, KXboxStartButton);
+    xboxBtnLT = new Trigger(() -> (joystickThreshold(xbox.getRawAxis(KXboxLeftTrigger))));
+    xboxBtnRT = new Trigger(() -> (joystickThreshold(xbox.getRawAxis(KXboxRightTrigger))));
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -100,8 +108,11 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    xboxBtnY.onTrue(pistonSetForward);
+    xboxBtnA.onTrue(pistonSetBackward);
+    xboxBtnB.onTrue(pistonSetOff);
   }
-
+ 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -150,45 +161,45 @@ public class RobotContainer {
     }
   }
 
-  // public double getXboxLeftAxis() {
-  //   final double Y = xbox.getRawAxis(KLeftYAxis);
-  //   if(Y > KDeadZone || Y < -KDeadZone)
-  //     return -Y;
-  //   else 
-  //     return 0;
-  // }
+  public double getXboxLeftAxis() {
+    final double Y = xbox.getRawAxis(KLeftYAxis);
+    if(Y > KDeadZone || Y < -KDeadZone)
+      return -Y;
+    else 
+      return 0;
+  }
 
-  // public double getXboxLeftXAxis() {
-  //   final double X = xbox.getRawAxis(KRightXAxis);
-  //   if(X > KDeadZone || X < -KDeadZone)
-  //     return X;
-  //   else 
-  //     return 0;
-  // }
+  public double getXboxLeftXAxis() {
+    final double X = xbox.getRawAxis(KRightXAxis);
+    if(X > KDeadZone || X < -KDeadZone)
+      return X;
+    else 
+      return 0;
+  }
 
-  // public double getXboxRightXAxis() {
-  //   final double X = xbox.getRawAxis(KRightXAxis);
-  //   if (X > KDeadZone || X < -KDeadZone)
-  //     return -X;
-  //   else
-  //     return 0;
-  // }
+  public double getXboxRightXAxis() {
+    final double X = xbox.getRawAxis(KRightXAxis);
+    if (X > KDeadZone || X < -KDeadZone)
+      return -X;
+    else
+      return 0;
+  }
 
-  // public double getXboxLeftYAxis() {
-  //   final double Y = xbox.getRawAxis(KLeftYAxis);
-  //   if(Y > KDeadZone || Y < -KDeadZone)
-  //     return -Y;
-  //   else 
-  //     return 0;
-  // }
+  public double getXboxLeftYAxis() {
+    final double Y = xbox.getRawAxis(KLeftYAxis);
+    if(Y > KDeadZone || Y < -KDeadZone)
+      return -Y;
+    else 
+      return 0;
+  }
 
-  // public double getXboxRightYAxis() {
-  //   final double Y = xbox.getRawAxis(KRightYAxis);
-  //   if (Y > KDeadZone || Y < -KDeadZone)
-  //     return -Y;
-  //   else
-  //     return 0;
-  // }
+  public double getXboxRightYAxis() {
+    final double Y = xbox.getRawAxis(KRightYAxis);
+    if (Y > KDeadZone || Y < -KDeadZone)
+      return -Y;
+    else
+      return 0;
+  }
 public boolean joystickThreshold(double triggerValue) {
     if (Math.abs(triggerValue) < .09) 
       return false;

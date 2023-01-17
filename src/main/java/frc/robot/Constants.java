@@ -90,5 +90,9 @@ public final class Constants {
   public static final boolean KFrontRightAngleReversed = false;
   public static final boolean KBackLeftAngleReversed = false;
   public static final boolean KBackRightAngleReversed = false;
+
+  //Piston
+  public static final int KForwardChannel = 1;
+  public static final int KReverseChannel = 0;
 }
         
