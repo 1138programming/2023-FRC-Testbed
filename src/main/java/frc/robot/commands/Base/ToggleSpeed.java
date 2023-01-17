@@ -10,9 +10,11 @@ import static frc.robot.Constants.*;
 public class ToggleSpeed extends CommandBase {
   private Base base;
 //   private 
+private double speedFactor;
 
-  public ToggleSpeed(Base base) {
+  public ToggleSpeed(Base base, double speedFactor) {
     this.base = base;
+    this.speedFactor = speedFactor;
     addRequirements(base);
   }
 
@@ -20,8 +22,7 @@ public class ToggleSpeed extends CommandBase {
   @Override
   public void initialize() 
   {
-    if(base.getDriveSpeedFactor() == KBaseDriveHighPercent) base.setDriveSpeedFactor(KBaseDriveLowPercent);
-    else base.setDriveSpeedFactor(KBaseDriveHighPercent);
+    base.setDriveSpeedFactor(speedFactor);
   }
 
   

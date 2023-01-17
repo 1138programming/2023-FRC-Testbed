@@ -1,21 +1,20 @@
 package frc.robot.subsystems;
 
 import static frc.robot.Constants.*;
-import frc.robot.subsystems.SwerveModule;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import java.util.ArrayList;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -42,13 +41,14 @@ public class Base extends SubsystemBase {
   private Pose2d pose;
   
   private double driveSpeedFactor;
-  private boolean generateOdometryLog;
+
+  private boolean enableLogging;
   private long startTime;
   private ArrayList<String> odometryData;
+  private static final String logFolder = "/media/sda2/";
+  private static final String logTitle = "'OdometryLog'_yy-MM-dd_HH-mm-ss'.csv'";
   
   public Base() {
-    gyro = new AHRS(SPI.Port.kMXP);
-    gyro.reset();
     frontLeftModule = new SwerveModule(
       new CANSparkMax(KFrontLeftAngleID, MotorType.kBrushless),
       new CANSparkMax(KFrontLeftDriveID, MotorType.kBrushless),
@@ -58,7 +58,7 @@ public class Base extends SubsystemBase {
       KFrontLeftAngleReversed
     );
     frontRightModule = new SwerveModule(
-      new CANSparkMax(KFrontRightAngleID, MotorType.kBrushless), 
+        new CANSparkMax(KFrontRightAngleID, MotorType.kBrushless), 
       new CANSparkMax(KFrontRightDriveID, MotorType.kBrushless), 
       new DutyCycleEncoder(KFrontRightMagEncoderID), 
       KFrontRightOffset,
@@ -82,24 +82,20 @@ public class Base extends SubsystemBase {
       KBackRightAngleReversed
     );
 
+    gyro = new AHRS(SPI.Port.kMXP);
+    gyro.reset();
+
     kinematics = new SwerveDriveKinematics(
       KFrontLeftLocation, KFrontRightLocation,
       KBackLeftLocation, KBackRightLocation
     );
     odometry = new SwerveDriveOdometry(kinematics, getHeading(), getPositions());
     driveSpeedFactor = KBaseDriveLowPercent;
-    generateOdometryLog = false;
+
+    enableLogging = false;
     startTime = RobotController.getFPGATime();
     odometryData = new ArrayList<String>();
   }
-
-  // public void resetAbsolute() {
-  //   frontLeftModule.resetAbsolute();
-  //   frontRightModule.resetAbsolute();
-  //   backLeftModule.resetAbsolute();
-  //   backRightModule.resetAbsolute();
-  // }
-
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, double maxDriveSpeedMPS) {
     xSpeed *= maxDriveSpeedMPS;
@@ -113,7 +109,8 @@ public class Base extends SubsystemBase {
           ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(gyro.getAngle()))
           // ? new ChassisSpeeds(xSpeed, ySpeed, rot)
           : new ChassisSpeeds(xSpeed, ySpeed, rot));
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, KPhysicalMaxDriveSpeedMPS);
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, KPhysicalMaxDriveSpeedMPS * driveSpeedFactor);
+    SmartDashboard.putNumber("speedFactor", driveSpeedFactor);
 
     //setting module states, aka moving the motors
     frontLeftModule.setDesiredState(states[2]);
@@ -121,6 +118,10 @@ public class Base extends SubsystemBase {
     backLeftModule.setDesiredState(states[0]);
     backRightModule.setDesiredState(states[1]);
 }
+
+  public void calibrateGyro() {
+    gyro.calibrate();
+  }
 
   // recalibrates gyro offset
   public void resetGyro() {
@@ -158,11 +159,11 @@ public class Base extends SubsystemBase {
     odometry.resetPosition(getHeading(), getPositions(), pose);
   }
 
-  public void setGenerateOdometryLog(boolean generateOdometryLog) {
-    this.generateOdometryLog = generateOdometryLog;
+  public void setLoggingEnabled(boolean enableLogging) {
+    this.enableLogging = enableLogging;
   }
-  public boolean getGenerateOdometryLog() {
-    return generateOdometryLog;
+  public boolean getLoggingEnabled() {
+    return enableLogging;
   }
 
   private void genOdometryData() {
@@ -208,9 +209,11 @@ public class Base extends SubsystemBase {
     SmartDashboard.putNumber("odometry X", odometry.getPoseMeters().getX());
     SmartDashboard.putNumber("odometry Y", odometry.getPoseMeters().getY());
 
+    SmartDashboard.putBoolean("isCalibrating", gyro.isCalibrating());
+
     pose = odometry.update(getHeading(), getPositions());
 
-    if (generateOdometryLog && odometryData.size() < 1000) {
+    if (enableLogging && odometryData.size() < 1000) {
       genOdometryData();
     }
   }
