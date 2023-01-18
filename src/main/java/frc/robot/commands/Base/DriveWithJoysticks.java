@@ -48,9 +48,9 @@ public class DriveWithJoysticks extends CommandBase {
   public void execute() {
     fbSpeed = Robot.m_robotContainer.getLogiLeftYAxis();
     
-    lrSpeed = -Robot.m_robotContainer.getLogiLeftXAxis();
+    lrSpeed = Robot.m_robotContainer.getLogiLeftXAxis();
     
-    rot = Robot.m_robotContainer.getLogiRightXAxis();
+    rot = -Robot.m_robotContainer.getLogiRightXAxis();
     
     // if (Math.abs(rot) <= 0.01 && (Math.abs(fbSpeed) >= 0.01 || Math.abs(lrSpeed) >= 0.01)) {
     //   rot = rotationCorrectionPID.calculate(base.getHeadingDeg(), initHeading);

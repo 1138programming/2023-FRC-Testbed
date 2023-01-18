@@ -107,7 +107,6 @@ public class Base extends SubsystemBase {
       kinematics.toSwerveModuleStates(
         fieldRelative
           ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(gyro.getAngle()))
-          // ? new ChassisSpeeds(xSpeed, ySpeed, rot)
           : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(states, KPhysicalMaxDriveSpeedMPS * driveSpeedFactor);
     SmartDashboard.putNumber("speedFactor", driveSpeedFactor);
@@ -156,6 +155,8 @@ public class Base extends SubsystemBase {
   }
 
   public void resetOdometry() {
+    resetAllRelEncoders();
+    
     odometry.resetPosition(getHeading(), getPositions(), pose);
   }
 

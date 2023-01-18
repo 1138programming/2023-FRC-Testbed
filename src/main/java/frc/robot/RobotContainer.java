@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.*;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.Base.DriveWithJoysticks;
 import frc.robot.commands.Base.ResetEncoders;
 import frc.robot.commands.Base.ToggleGenerateOdometryLog;
@@ -31,8 +34,8 @@ public class RobotContainer {
   private final ToggleGenerateOdometryLog toggleGenerateOdometryLog = new ToggleGenerateOdometryLog(base);
   private final WriteOdometryLog writeOdometryLog = new WriteOdometryLog(base);
   private final ToggleSpeed toggleFastSpeed = new ToggleSpeed(base, 1);
-  private final ToggleSpeed toggleMidSpeed = new ToggleSpeed(base, 0.6);
-  private final ToggleSpeed toggleSlowSpeed = new ToggleSpeed(base, 0.3);
+  private final ToggleSpeed toggleMidSpeed = new ToggleSpeed(base, KBaseDriveHighPercent);
+  private final ToggleSpeed toggleSlowSpeed = new ToggleSpeed(base, KBaseDriveLowPercent);
 
   //Controller Ports (check in Driver Station, IDs may be different for each computer)
   private static final int KLogitechPort = 0;
@@ -140,6 +143,7 @@ public class RobotContainer {
        
   public double getLogiRightYAxis() {
     final double Y = logitech.getRawAxis(KRightYAxis);
+    SmartDashboard.putNumber("getLogiRightYAxis", -Y);
     if (Y > KDeadZone || Y < -KDeadZone)
       return -Y;
     else
@@ -148,6 +152,7 @@ public class RobotContainer {
 
   public double getLogiLeftYAxis() {
     final double Y = logitech.getY();
+    SmartDashboard.putNumber("getLogiLeftYAxis", -Y);
     if(Y > KDeadZone || Y < -KDeadZone)
       return -Y;
     else 
@@ -156,8 +161,9 @@ public class RobotContainer {
 
   public double getLogiRightXAxis() {
     double X = logitech.getZ();
+    SmartDashboard.putNumber("getLogiRightXAxis", -X);
     if (X > KDeadZone || X < -KDeadZone) {
-      return -X;
+      return X;
     } else {
       return 0; 
     }
@@ -165,8 +171,9 @@ public class RobotContainer {
 
   public double getLogiLeftXAxis() {
     double X = logitech.getX();
+    SmartDashboard.putNumber("getLogiLeftXAxis", -X);
     if (X > KDeadZone || X < -KDeadZone) {
-      return -X;
+      return X;
     } else {
       return 0;
     }
