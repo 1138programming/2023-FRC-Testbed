@@ -58,7 +58,8 @@ public class SwerveModule extends SubsystemBase {
     desiredState = SwerveModuleState.optimize(desiredState, currentAngleR2D);
 
     // Angle calculation
-    angleMotorOutput = angleController.calculate(getAngleDeg(), desiredState.angle.getDegrees());
+    angleMotorOutput = angleController.calculate(getAngleDeg(), -desiredState.angle.getDegrees()); // TRYING NEGATIVE FOR ROTATION
+    // angleMotorOutput = angleController.calculate(getAngleDeg(), -desiredState.angle.getDegrees());
     angleMotor.set(angleMotorOutput);
 
     // Drive calculation

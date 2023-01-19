@@ -112,10 +112,14 @@ public class Base extends SubsystemBase {
     SmartDashboard.putNumber("speedFactor", driveSpeedFactor);
 
     //setting module states, aka moving the motors
-    frontLeftModule.setDesiredState(states[2]);
-    frontRightModule.setDesiredState(states[3]);
-    backLeftModule.setDesiredState(states[0]);
-    backRightModule.setDesiredState(states[1]);
+    frontLeftModule.setDesiredState(states[0]);
+    frontRightModule.setDesiredState(states[1]);
+    backLeftModule.setDesiredState(states[2]);
+    backRightModule.setDesiredState(states[3]);
+    // frontLeftModule.setDesiredState(states[2]);
+    // frontRightModule.setDesiredState(states[3]);
+    // backLeftModule.setDesiredState(states[0]);
+    // backRightModule.setDesiredState(states[1]);
 }
 
   public void calibrateGyro() {
