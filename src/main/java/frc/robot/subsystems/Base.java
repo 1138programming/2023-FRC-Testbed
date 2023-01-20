@@ -55,7 +55,8 @@ public class Base extends SubsystemBase {
       new DutyCycleEncoder(KFrontLeftMagEncoderID),
       KFrontLeftOffset,
       KFrontLeftDriveReversed,
-      KFrontLeftAngleReversed
+      KFrontLeftAngleReversed,
+      KFrontLeftAngleEncoderReversed
     );
     frontRightModule = new SwerveModule(
         new CANSparkMax(KFrontRightAngleID, MotorType.kBrushless), 
@@ -63,7 +64,8 @@ public class Base extends SubsystemBase {
       new DutyCycleEncoder(KFrontRightMagEncoderID), 
       KFrontRightOffset,
       KFrontRightDriveReversed,
-      KFrontRightAngleReversed
+      KFrontRightAngleReversed,
+      KFrontRightAngleEncoderReversed
     );
     backLeftModule = new SwerveModule(
       new CANSparkMax(KBackLeftAngleID, MotorType.kBrushless), 
@@ -71,7 +73,8 @@ public class Base extends SubsystemBase {
       new DutyCycleEncoder(KBackLeftMagEncoderID), 
       KBackLeftOffset,
       KBackLeftDriveReversed,
-      KBackLeftAngleReversed
+      KBackLeftAngleReversed,
+      KBackLeftAngleEncoderReversed
     );
     backRightModule = new SwerveModule(
       new CANSparkMax(KBackRightAngleID, MotorType.kBrushless), 
@@ -79,7 +82,8 @@ public class Base extends SubsystemBase {
       new DutyCycleEncoder(KBackRightMagEncoderID), 
       KBackRightOffset,
       KBackRightDriveReversed,
-      KBackRightAngleReversed
+      KBackRightAngleReversed,
+      KBackRightAngleEncoderReversed
     );
 
     gyro = new AHRS(SPI.Port.kMXP);
@@ -106,7 +110,7 @@ public class Base extends SubsystemBase {
     SwerveModuleState[] states =
       kinematics.toSwerveModuleStates(
         fieldRelative
-          ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, Rotation2d.fromDegrees(gyro.getAngle()))
+          ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, getHeading())
           : new ChassisSpeeds(xSpeed, ySpeed, rot));
     SwerveDriveKinematics.desaturateWheelSpeeds(states, KPhysicalMaxDriveSpeedMPS * driveSpeedFactor);
     SmartDashboard.putNumber("speedFactor", driveSpeedFactor);
@@ -142,20 +146,20 @@ public class Base extends SubsystemBase {
   public SwerveModulePosition[] getPositions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
-    positions[0] = new SwerveModulePosition(frontLeftModule.getDriveEncoderPos(), frontLeftModule.getAngleR2D());
-    positions[1] = new SwerveModulePosition(frontRightModule.getDriveEncoderPos(), frontRightModule.getAngleR2D());
-    positions[2] = new SwerveModulePosition(backLeftModule.getDriveEncoderPos(), backLeftModule.getAngleR2D());
-    positions[3] = new SwerveModulePosition(backRightModule.getDriveEncoderPos(), backRightModule.getAngleR2D());
+    positions[0] = frontLeftModule.getPosition();
+    positions[1] = frontRightModule.getPosition();
+    positions[2] = backLeftModule.getPosition();
+    positions[3] = backRightModule.getPosition();
 
     return positions;
   }
   
   public Rotation2d getHeading() {
-    return Rotation2d.fromDegrees(gyro.getAngle());
+    return Rotation2d.fromDegrees(getHeadingDeg());
   }
 
   public double getHeadingDeg() {
-    return gyro.getAngle();
+    return -gyro.getAngle();
   }
 
   public void resetOdometry() {
@@ -194,7 +198,7 @@ public class Base extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Gyro", gyro.getAngle());
+    SmartDashboard.putNumber("Gyro", getHeadingDeg());
 
     SmartDashboard.putNumber("Front left module", frontLeftModule.getAngleDeg());
     SmartDashboard.putNumber("Front right module", frontRightModule.getAngleDeg());

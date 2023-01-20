@@ -8,8 +8,10 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveModule extends SubsystemBase {
@@ -22,7 +24,7 @@ public class SwerveModule extends SubsystemBase {
 
   private PIDController angleController;
     
-  public SwerveModule(CANSparkMax angleMotor, CANSparkMax driveMotor, DutyCycleEncoder magEncoder, double offset, boolean driveMotorReversed, boolean angleMotorReversed) {
+  public SwerveModule(CANSparkMax angleMotor, CANSparkMax driveMotor, DutyCycleEncoder magEncoder, double offset, boolean driveMotorReversed, boolean angleMotorReversed, boolean driveEncoderReversed) {
     angleMotor.setIdleMode(IdleMode.kBrake);
     driveMotor.setIdleMode(IdleMode.kBrake);
     this.angleMotor = angleMotor;
@@ -34,8 +36,13 @@ public class SwerveModule extends SubsystemBase {
     driveEncoder = driveMotor.getEncoder();
     angleEncoder = angleMotor.getEncoder();
     driveEncoder.setPositionConversionFactor(KDriveMotorRotToMeter);
-    driveEncoder.setVelocityConversionFactor(KDriveMotorRPMToMetersPerSec);
+    // if (driveEncoderReversed) {
+    //   driveEncoder.setVelocityConversionFactor(-KDriveMotorRPMToMetersPerSec);
+    // } else {
+      driveEncoder.setVelocityConversionFactor(KDriveMotorRPMToMetersPerSec);
+    // }
     angleEncoder.setPositionConversionFactor(KAngleMotorRotToDeg);
+
 
     angleController = new PIDController(KAngleP, KAngleI, KAngleD);
     angleController.enableContinuousInput(-180, 180); // Tells PIDController that 180 deg is same in both directions
@@ -44,6 +51,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setDesiredState(SwerveModuleState desiredState) {
+    SmartDashboard.putNumber("encoder " + driveMotor.getDeviceId(), driveEncoder.getPosition());
     // If no controller input, set angle and drive motor to 0
     if (Math.abs(desiredState.speedMetersPerSecond) < 0.001) {
       angleMotor.set(0);
@@ -58,14 +66,17 @@ public class SwerveModule extends SubsystemBase {
     desiredState = SwerveModuleState.optimize(desiredState, currentAngleR2D);
 
     // Angle calculation
-    angleMotorOutput = angleController.calculate(getAngleDeg(), -desiredState.angle.getDegrees()); // TRYING NEGATIVE FOR ROTATION
-    // angleMotorOutput = angleController.calculate(getAngleDeg(), -desiredState.angle.getDegrees());
+    angleMotorOutput = angleController.calculate(getAngleDeg(), desiredState.angle.getDegrees());
     angleMotor.set(angleMotorOutput);
 
     // Drive calculation
     driveMotorOutput = desiredState.speedMetersPerSecond / KPhysicalMaxDriveSpeedMPS;
 
     driveMotor.set(driveMotorOutput);
+  }
+
+  public SwerveModulePosition getPosition() {
+    return new SwerveModulePosition(getDriveEncoderPos(), getAngleR2D());
   }
 
   public void stop() {
@@ -88,6 +99,9 @@ public class SwerveModule extends SubsystemBase {
 
   // Drive Encoder getters
   public double getDriveEncoderPos() {
+    // if (driveEncoderReversed) {
+      
+    // }
     return driveEncoder.getPosition();
   }
 
@@ -100,15 +114,13 @@ public class SwerveModule extends SubsystemBase {
     double pos = magEncoder.get() % 1;
     return pos;
   }
-
   public double getMagDeg() {
-    return -getMagRotations() * 360 % 360;
+    return getMagRotations() * 360 % 360;
   }
 
   public double getAngleDeg() {
     return angleEncoder.getPosition() % 360;
   }
-
   public Rotation2d getAngleR2D() {
     return Rotation2d.fromDegrees(getAngleDeg()); 
   }

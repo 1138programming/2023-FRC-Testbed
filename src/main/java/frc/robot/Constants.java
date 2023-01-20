@@ -86,9 +86,14 @@ public final class Constants {
   public static final boolean KBackLeftDriveReversed = false;
   public static final boolean KBackRightDriveReversed = false;
 
-  public static final boolean KFrontLeftAngleReversed = false;
-  public static final boolean KFrontRightAngleReversed = false;
-  public static final boolean KBackLeftAngleReversed = false;
-  public static final boolean KBackRightAngleReversed = false;
+  public static final boolean KFrontLeftAngleReversed = true;
+  public static final boolean KFrontRightAngleReversed = true;
+  public static final boolean KBackLeftAngleReversed = true;
+  public static final boolean KBackRightAngleReversed = true;
+
+  public static final boolean KFrontLeftAngleEncoderReversed = true;
+  public static final boolean KFrontRightAngleEncoderReversed = false;
+  public static final boolean KBackLeftAngleEncoderReversed = false;
+  public static final boolean KBackRightAngleEncoderReversed = true;
 }
         

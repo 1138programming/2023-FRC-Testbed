@@ -163,7 +163,7 @@ public class RobotContainer {
     double X = logitech.getZ();
     SmartDashboard.putNumber("getLogiRightXAxis", -X);
     if (X > KDeadZone || X < -KDeadZone) {
-      return X;
+      return -X;
     } else {
       return 0; 
     }
@@ -173,7 +173,7 @@ public class RobotContainer {
     double X = logitech.getX();
     SmartDashboard.putNumber("getLogiLeftXAxis", -X);
     if (X > KDeadZone || X < -KDeadZone) {
-      return X;
+      return -X;
     } else {
       return 0;
     }
