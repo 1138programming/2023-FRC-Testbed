@@ -79,7 +79,10 @@ public final class Constants {
     -KWheelDistanceFromCenter, -KWheelDistanceFromCenter
   );
   //Intake//
-  public static final int KBottumIntakeId = 1; 
-  public static final int KTopIntakeId = 0;
+  public static final int KLeftIntakeId = 1; 
+  public static final int KSpaghettiIntakeId = 2;
+  public static final int KRightIntakeId = 3; 
+  public static final double KIntakeSpaghettitSpeed = 0.4; 
+  public static final double KIntakeRollerSpeed = 0.4; 
 }
         
