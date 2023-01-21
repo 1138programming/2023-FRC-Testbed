@@ -9,9 +9,14 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.MoveHopper;
 import frc.robot.commands.PistonSet;
-import static frc.robot.commands.PistonSet.SETCOMMAND; 
+import static frc.robot.commands.PistonSet.SETCOMMAND;
+
+import frc.robot.subsystems.Hopper;
+import static frc.robot.commands.MoveHopper.HOPPERDIRECTION;
 import frc.robot.subsystems.Piston;
 
 /**
@@ -22,10 +27,16 @@ import frc.robot.subsystems.Piston;
  */
 public class RobotContainer {
   private final Piston piston = new Piston();
+  private final Hopper hopper = new Hopper();
   
-  private final PistonSet pistonSetForward = new PistonSet(piston,SETCOMMAND.FORWARD);
-  private final PistonSet pistonSetBackward = new PistonSet(piston,SETCOMMAND.BACKWARD);
+  private final PistonSet pistonSetForward = new PistonSet(piston, SETCOMMAND.FORWARD);
+  private final PistonSet pistonSetBackward = new PistonSet(piston, SETCOMMAND.BACKWARD);
   private final PistonSet pistonSetOff = new PistonSet(piston,SETCOMMAND.OFF);
+
+  private MoveHopper moveHopperUp = new MoveHopper(hopper, HOPPERDIRECTION.UP);
+  private MoveHopper moveHopperDown = new MoveHopper(hopper, HOPPERDIRECTION.DOWN);
+  private MoveHopper moveHopperLeft = new MoveHopper(hopper, HOPPERDIRECTION.LEFT);
+  private MoveHopper moveHopperRight = new MoveHopper(hopper, HOPPERDIRECTION.RIGHT);
 
   //Controller Ports (check in Driver Station, IDs may be different for each computer)
   private static final int KLogitechPort = 0;
@@ -61,6 +72,10 @@ public class RobotContainer {
   public static final int KXboxStartButton = 8; 
   public static final int KXboxLeftTrigger = 2; 
   public static final int KXboxRightTrigger = 3; 
+  public static final int KXboxUpDPad = 0;
+  public static final int KXboxRightDPad = 90;
+  public static final int KXboxDownDPad = 180;
+  public static final int KXboxLeftDPad = 270;
 
   //Game Controllers
   public static Joystick logitech;
@@ -69,6 +84,7 @@ public class RobotContainer {
   public JoystickButton logitechBtnX, logitechBtnA, logitechBtnB, logitechBtnY, logitechBtnLB, logitechBtnRB, logitechBtnLT, logitechBtnRT; //Logitech Button
   public JoystickButton xboxBtnA, xboxBtnB, xboxBtnX, xboxBtnY, xboxBtnLB, xboxBtnRB, xboxBtnStrt, xboxBtnSelect;
   public Trigger xboxBtnRT, xboxBtnLT;
+  public POVButton xboxBtnLeft, xboxBtnUp, xboxBtnDown, xboxBtnRight;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -97,6 +113,10 @@ public class RobotContainer {
 		xboxBtnStrt = new JoystickButton(xbox, KXboxStartButton);
     xboxBtnLT = new Trigger(() -> (joystickThreshold(xbox.getRawAxis(KXboxLeftTrigger))));
     xboxBtnRT = new Trigger(() -> (joystickThreshold(xbox.getRawAxis(KXboxRightTrigger))));
+    xboxBtnUp = new POVButton(xbox, KXboxUpDPad);
+    xboxBtnDown = new POVButton(xbox, KXboxDownDPad);
+    xboxBtnLeft = new POVButton(xbox, KXboxLeftDPad);
+    xboxBtnRight = new POVButton(xbox, KXboxRightDPad);
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -111,6 +131,11 @@ public class RobotContainer {
     xboxBtnY.onTrue(pistonSetForward);
     xboxBtnA.onTrue(pistonSetBackward);
     xboxBtnB.onTrue(pistonSetOff);
+
+    xboxBtnUp.whileTrue(moveHopperUp);
+    xboxBtnDown.whileTrue(moveHopperDown);
+    xboxBtnLeft.whileTrue(moveHopperLeft);
+    xboxBtnRight.whileTrue(moveHopperRight);
   }
  
   /**

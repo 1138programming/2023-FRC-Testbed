@@ -16,83 +16,14 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  //Swerve Module
-  public static final double KAngleP = 0.006;
-  public static final double KAngleI = 0;
-  public static final double KAngleD = 0;
-  
-  public static final double KDriveP = 0.2;
-  public static final double KDriveI = 0.75;
-  public static final double KDriveD = 0.005;
-  
-  public static final double KDegPerRotation = 360;
-  
-  private static final double KDriveMotorGearRatio = 1/6.55;
-  private static final double KWheelDiameterMeters = 0.1016;
-  public static final double KDriveMotorRotToMeter = KDriveMotorGearRatio * KWheelDiameterMeters * Math.PI;
-
-  public static final double KDriveMotorRPMToMetersPerSec = KDriveMotorRotToMeter / 60;
-
-  private static final double KAngleMotorShaftToWheelRatio = 1 / 10.2857;
-  public static final double KAngleMotorRotToDeg = 35;
-  public static final double KNeoMaxRPM = 5700;
-  public static final double KPhysicalMaxDriveSpeedMPS = KNeoMaxRPM * KDriveMotorRPMToMetersPerSec;
-  public static final double KMaxAngularSpeed = Math.PI;
-  
-  
-  //Base
-  public static final int KFrontLeftAngleID = 5;
-  public static final int KFrontLeftDriveID = 4;
-  
-  public static final int KFrontRightAngleID = 7;
-  public static final int KFrontRightDriveID = 6;
-  
-  public static final int KBackLeftAngleID = 2;
-  public static final int KBackLeftDriveID = 3;
-  
-  public static final int KBackRightAngleID = 1;
-  public static final int KBackRightDriveID = 8;
-  
-  public static final double KBaseDriveLowPercent = 0.6;
-  public static final double KBaseDriveHighPercent = 1.0;
-  
-  public static final double KFrontLeftOffset = 0.686;
-  public static final double KFrontRightOffset = 0.6987;
-  public static final double KBackLeftOffset = 0.017;
-  public static final double KBackRightOffset = 0.139;
-  
-  public static final int KFrontLeftMagEncoderID = 7;
-  public static final int KFrontRightMagEncoderID = 5;
-  public static final int KBackLeftMagEncoderID = 2;
-  public static final int KBackRightMagEncoderID = 0;
-  
-  public static final double KWheelDistanceFromCenter = 0.29845;
-  
-  public static final Translation2d KFrontLeftLocation = new Translation2d(
-    KWheelDistanceFromCenter, KWheelDistanceFromCenter
-  );
-  public static final Translation2d KFrontRightLocation = new Translation2d(
-    KWheelDistanceFromCenter, -KWheelDistanceFromCenter
-  );
-  public static final Translation2d KBackLeftLocation = new Translation2d(
-    -KWheelDistanceFromCenter, KWheelDistanceFromCenter
-  );
-  public static final Translation2d KBackRightLocation = new Translation2d(
-    -KWheelDistanceFromCenter, -KWheelDistanceFromCenter
-  );
-
-  public static final boolean KFrontLeftDriveReversed = false;
-  public static final boolean KFrontRightDriveReversed = false;
-  public static final boolean KBackLeftDriveReversed = false;
-  public static final boolean KBackRightDriveReversed = true;
-
-  public static final boolean KFrontLeftAngleReversed = false;
-  public static final boolean KFrontRightAngleReversed = false;
-  public static final boolean KBackLeftAngleReversed = false;
-  public static final boolean KBackRightAngleReversed = false;
-
   //Piston
   public static final int KForwardChannel = 1;
   public static final int KReverseChannel = 0;
+
+  // Hopper 
+  public static final int KHopperLeftID = 1;
+  public static final int KHopperRightID = 2;
+
+  public static final double KHopperSpeed = 0.7;
 }
         
