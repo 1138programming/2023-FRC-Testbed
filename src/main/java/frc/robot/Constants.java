@@ -78,5 +78,8 @@ public final class Constants {
   public static final Translation2d KBackRightLocation = new Translation2d(
     -KWheelDistanceFromCenter, -KWheelDistanceFromCenter
   );
+  //Intake//
+  public static final int KBottumIntakeId = 1; 
+  public static final int KTopIntakeId = 0;
 }
         
