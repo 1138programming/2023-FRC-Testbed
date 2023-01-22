@@ -10,6 +10,7 @@ import java.util.Date;
 
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.databind.node.POJONode;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 
@@ -56,7 +57,7 @@ public class Base extends SubsystemBase {
       KFrontLeftOffset,
       KFrontLeftDriveReversed,
       KFrontLeftAngleReversed,
-      KFrontLeftAngleEncoderReversed
+      KFrontLeftDriveEncoderReversed
     );
     frontRightModule = new SwerveModule(
         new CANSparkMax(KFrontRightAngleID, MotorType.kBrushless), 
@@ -65,7 +66,7 @@ public class Base extends SubsystemBase {
       KFrontRightOffset,
       KFrontRightDriveReversed,
       KFrontRightAngleReversed,
-      KFrontRightAngleEncoderReversed
+      KFrontRightDriveEncoderReversed
     );
     backLeftModule = new SwerveModule(
       new CANSparkMax(KBackLeftAngleID, MotorType.kBrushless), 
@@ -74,7 +75,7 @@ public class Base extends SubsystemBase {
       KBackLeftOffset,
       KBackLeftDriveReversed,
       KBackLeftAngleReversed,
-      KBackLeftAngleEncoderReversed
+      KBackLeftDriveEncoderReversed
     );
     backRightModule = new SwerveModule(
       new CANSparkMax(KBackRightAngleID, MotorType.kBrushless), 
@@ -83,7 +84,7 @@ public class Base extends SubsystemBase {
       KBackRightOffset,
       KBackRightDriveReversed,
       KBackRightAngleReversed,
-      KBackRightAngleEncoderReversed
+      KBackRightDriveEncoderReversed
     );
 
     gyro = new AHRS(SPI.Port.kMXP);
@@ -120,10 +121,6 @@ public class Base extends SubsystemBase {
     frontRightModule.setDesiredState(states[1]);
     backLeftModule.setDesiredState(states[2]);
     backRightModule.setDesiredState(states[3]);
-    // frontLeftModule.setDesiredState(states[2]);
-    // frontRightModule.setDesiredState(states[3]);
-    // backLeftModule.setDesiredState(states[0]);
-    // backRightModule.setDesiredState(states[1]);
 }
 
   public void calibrateGyro() {
@@ -146,6 +143,10 @@ public class Base extends SubsystemBase {
   public SwerveModulePosition[] getPositions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
 
+    // positions[0] = new SwerveModulePosition(frontLeftModule.getDriveEncoderPos(), frontLeftModule.getAngleR2D());
+    // positions[1] = new SwerveModulePosition(frontRightModule.getDriveEncoderPos(), frontRightModule.getAngleR2D());
+    // positions[2] = new SwerveModulePosition(backLeftModule.getDriveEncoderPos(), backLeftModule.getAngleR2D());
+    // positions[3] = new SwerveModulePosition(backRightModule.getDriveEncoderPos(), backRightModule.getAngleR2D());
     positions[0] = frontLeftModule.getPosition();
     positions[1] = frontRightModule.getPosition();
     positions[2] = backLeftModule.getPosition();
@@ -164,6 +165,7 @@ public class Base extends SubsystemBase {
 
   public void resetOdometry() {
     resetAllRelEncoders();
+    pose = new Pose2d();
     
     odometry.resetPosition(getHeading(), getPositions(), pose);
   }
@@ -215,12 +217,12 @@ public class Base extends SubsystemBase {
     SmartDashboard.putNumber("back left big", backLeftModule.getAbsoluteOffset());
     SmartDashboard.putNumber("back right big", backRightModule.getAbsoluteOffset());
 
-    SmartDashboard.putNumber("odometry X", odometry.getPoseMeters().getX());
-    SmartDashboard.putNumber("odometry Y", odometry.getPoseMeters().getY());
+    SmartDashboard.putString("odometry pose", odometry.getPoseMeters().toString());
 
     SmartDashboard.putBoolean("isCalibrating", gyro.isCalibrating());
 
-    pose = odometry.update(getHeading(), getPositions());
+    odometry.update(getHeading(), getPositions());
+    pose = odometry.getPoseMeters();
 
     if (enableLogging && odometryData.size() < 1000) {
       genOdometryData();

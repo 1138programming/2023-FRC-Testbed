@@ -57,7 +57,7 @@ public final class Constants {
   public static final double KBaseDriveHighPercent = 0.7;
   
   public static final double KFrontLeftOffset = 0.159;
-  public static final double KFrontRightOffset = 0.0047;
+  public static final double KFrontRightOffset = 0.5047;
   public static final double KBackLeftOffset = 0.2044;
   public static final double KBackRightOffset = 0.192;
   
@@ -82,7 +82,7 @@ public final class Constants {
   );
 
   public static final boolean KFrontLeftDriveReversed = false;
-  public static final boolean KFrontRightDriveReversed = true;
+  public static final boolean KFrontRightDriveReversed = false;
   public static final boolean KBackLeftDriveReversed = false;
   public static final boolean KBackRightDriveReversed = false;
 
@@ -91,9 +91,9 @@ public final class Constants {
   public static final boolean KBackLeftAngleReversed = true;
   public static final boolean KBackRightAngleReversed = true;
 
-  public static final boolean KFrontLeftAngleEncoderReversed = true;
-  public static final boolean KFrontRightAngleEncoderReversed = false;
-  public static final boolean KBackLeftAngleEncoderReversed = false;
-  public static final boolean KBackRightAngleEncoderReversed = true;
+  public static final boolean KFrontLeftDriveEncoderReversed = false;
+  public static final boolean KFrontRightDriveEncoderReversed = false;
+  public static final boolean KBackLeftDriveEncoderReversed = false;
+  public static final boolean KBackRightDriveEncoderReversed = false; 
 }
         
