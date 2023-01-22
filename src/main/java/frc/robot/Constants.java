@@ -92,7 +92,25 @@ public final class Constants {
   public static final boolean KBackRightAngleReversed = false;
 
   //Piston
-  public static final int KForwardChannel = 1;
-  public static final int KReverseChannel = 0;
+
+  //solenoid_1
+  public static final int KSolenoid1ForwardChannel = 1;
+  public static final int KSolenoid1ReverseChannel = 0;
+
+  //solenoid_2
+  public static final int KSolenoid2ForwardChannel = 2;
+  public static final int KSolenoid2ReverseChannel = 3;
+
+  //solenoid_3
+  public static final int KSolenoid3ForwardChannel = 2;
+  public static final int KSolenoid3ReverseChannel = 3;
+
+  //solenoid_4
+  public static final int KSolenoid4ForwardChannel = 2;
+  public static final int KSolenoid4ReverseChannel = 3;
+
+  //solenoid_5
+  public static final int KSolenoid5ForwardChannel = 2;
+  public static final int KSolenoid5ReverseChannel = 3;
 }
         
