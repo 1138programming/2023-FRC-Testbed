@@ -25,13 +25,16 @@ public class Intake extends SubsystemBase {
   public void SpaghettiSpin (double speed){
     spaghetti.set(ControlMode.PercentOutput, speed);
   }
+
   public void SpaghettiStop () {
     spaghetti.set(ControlMode.PercentOutput, 0);
   }
+
   public void RollerSpin (double speed) {
     left.set(ControlMode.PercentOutput, speed);
     right.set(ControlMode.PercentOutput, -speed);
   }
+  
   public void RollerStop () {
     left.set(ControlMode.PercentOutput, 0);
     right.set(ControlMode.PercentOutput, 0);

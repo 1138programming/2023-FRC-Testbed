@@ -95,5 +95,12 @@ public final class Constants {
   public static final boolean KFrontRightAngleEncoderReversed = false;
   public static final boolean KBackLeftAngleEncoderReversed = false;
   public static final boolean KBackRightAngleEncoderReversed = true;
+
+  //Intake//
+  public static final int KLeftIntakeId = 1; 
+  public static final int KSpaghettiIntakeId = 2;
+  public static final int KRightIntakeId = 3; 
+  public static final double KIntakeSpaghettitSpeed = 0.4; 
+  public static final double KIntakeRollerSpeed = 0.4; 
 }
         
