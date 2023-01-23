@@ -10,7 +10,8 @@ import frc.robot.subsystems.Piston;
 public class PistonSet extends CommandBase {
   /** Creates a new PistonSet. */
   
-  Piston piston1;
+  Piston piston;
+  int pistonNum;
 
   public enum SETCOMMAND {
     FORWARD,
@@ -19,12 +20,13 @@ public class PistonSet extends CommandBase {
   }
   
   SETCOMMAND hello;
-  public PistonSet(Piston piston1, SETCOMMAND hello) {
+  public PistonSet(Piston piston, SETCOMMAND hello, int pistonNum) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.piston1 = piston1;
+    this.piston = piston;
     this.hello = hello;
+    this.pistonNum = pistonNum;
 
-    addRequirements(piston1);
+    addRequirements(piston);
   }
 
   // Called when the command is initially scheduled.
@@ -32,13 +34,13 @@ public class PistonSet extends CommandBase {
   public void initialize() {
     switch(hello) {
       case FORWARD:
-        piston1.setForward();
+        piston.setForward(pistonNum);
         break;
       case BACKWARD:
-        piston1.setReverse();
+        piston.setReverse(pistonNum);
         break;
       case OFF:
-        piston1.setOff();
+        piston.setOff(pistonNum);
     }
     }
         

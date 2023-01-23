@@ -26,28 +26,71 @@ public class Piston extends SubsystemBase {
         solenoid4 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, KSolenoid5ForwardChannel, KSolenoid5ReverseChannel); 
     } 
 
-    public void setOff () {
-        solenoid1.set(kOff);
-        solenoid2.set(kOff);
-        solenoid3.set(kOff);
-        solenoid4.set(kOff);
-        solenoid5.set(kOff);
+    public void setOff (int solenoidId) {
+        switch (solenoidId) {
+            case 1:
+                solenoid1.set(kOff);
+                break;
+        
+            case 2:
+                solenoid2.set(kOff);
+                break;
+
+            case 3:
+                solenoid3.set(kOff);
+                break;
+
+            case 4:
+            solenoid4.set(kOff);
+
+                break;
+            case 5:
+            solenoid5.set(kOff);
+
+                break;
+            
+        }
+        
+       
     }
     
-    public void setForward () {
-        solenoid1.set(kForward);
-        solenoid2.set(kForward);
-        solenoid3.set(kForward);
-        solenoid4.set(kForward);
-        solenoid5.set(kForward);
+    public void setForward (int solenoidId) {
+        switch (solenoidId) {
+            case 1:
+                solenoid1.set(kForward);
+                break;
+        
+            case 2:
+                solenoid2.set(kForward);
+                break;
+
+            case 3:
+                solenoid3.set(kForward);
+                break;
+
+            case 4:
+                solenoid4.set(kForward);
+                break;
+            case 5:
+                solenoid5.set(kForward);
+                break;
+        }
     }
+        
     
-    public void  setReverse () {
-        solenoid1.set(kReverse);
-        solenoid2.set(kReverse);
-        solenoid3.set(kReverse);
-        solenoid4.set(kReverse);
-        solenoid5.set(kReverse);
+    public void  setReverse (int solenoidId) {
+        switch (solenoidId) {
+            case 1: solenoid1.set(kReverse);
+                break;
+            case 2: solenoid2.set(kReverse);
+                break;
+            case 3: solenoid3.set(kReverse);
+                break;
+            case 4: solenoid4.set(kReverse);
+                break;
+            case 5: solenoid5.set(kReverse);
+                break;
+        }
     }
 
 }

@@ -23,9 +23,9 @@ import frc.robot.subsystems.Piston;
 public class RobotContainer {
   private final Piston piston = new Piston();
   
-  private final PistonSet pistonSetForward = new PistonSet(piston,SETCOMMAND.FORWARD);
-  private final PistonSet pistonSetBackward = new PistonSet(piston,SETCOMMAND.BACKWARD);
-  private final PistonSet pistonSetOff = new PistonSet(piston,SETCOMMAND.OFF);
+  private final PistonSet piston1SetForward = new PistonSet(piston,SETCOMMAND.FORWARD, 1);
+  private final PistonSet piston1SetBackward = new PistonSet(piston,SETCOMMAND.BACKWARD, 1);
+  private final PistonSet piston1SetOff = new PistonSet(piston,SETCOMMAND.OFF, 1);
 
   //Controller Ports (check in Driver Station, IDs may be different for each computer)
   private static final int KLogitechPort = 0;
@@ -108,9 +108,9 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    xboxBtnY.onTrue(pistonSetForward);
-    xboxBtnA.onTrue(pistonSetBackward);
-    xboxBtnB.onTrue(pistonSetOff);
+    xboxBtnY.onTrue(piston1SetForward);
+    xboxBtnA.onTrue(piston1SetBackward);
+    xboxBtnB.onTrue(piston1SetOff);
   }
  
   /**
