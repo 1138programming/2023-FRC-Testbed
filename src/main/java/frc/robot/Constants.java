@@ -21,8 +21,8 @@ public final class Constants {
   public static final int KReverseChannel = 0;
 
   // Hopper 
-  public static final int KHopperLeftID = 1;
-  public static final int KHopperRightID = 2;
+  public static final int KHopperLeftID = 10;
+  public static final int KHopperRightID = 13;
 
   public static final double KHopperSpeed = 0.7;
 }

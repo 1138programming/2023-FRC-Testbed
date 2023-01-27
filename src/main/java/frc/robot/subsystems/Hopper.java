@@ -19,6 +19,7 @@ public class Hopper extends SubsystemBase {
   public Hopper() {
     leftMotor = new CANSparkMax(KHopperLeftID, MotorType.kBrushless);
     rightMotor = new CANSparkMax(KHopperRightID, MotorType.kBrushless);
+    
   }
 
   public void moveLeft(double speed) {

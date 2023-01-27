@@ -11,6 +11,8 @@ import static frc.robot.Constants.*;
 public class MoveHopper extends CommandBase {
   private Hopper hopper;
   private HOPPERDIRECTION direction;
+  private double leftSpeed;
+  private double rightSpeed;
 
 
   public enum HOPPERDIRECTION {
@@ -31,25 +33,32 @@ public class MoveHopper extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    switch (direction) {
+      case UP: 
+        leftSpeed = KHopperSpeed;
+        rightSpeed = KHopperSpeed;
+        break;
+      case DOWN: 
+        leftSpeed = -KHopperSpeed;
+        rightSpeed = -KHopperSpeed;
+        break;
+      case LEFT: 
+        leftSpeed = KHopperSpeed;
+        rightSpeed = -KHopperSpeed;
+        break;
+      case RIGHT: 
+        leftSpeed = - KHopperSpeed;
+        rightSpeed = KHopperSpeed;
+        break;
+    }
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    switch (direction) {
-      case UP: hopper.moveLeft(KHopperSpeed);
-        hopper.moveRight(KHopperSpeed);
-        break;
-      case DOWN: hopper.moveLeft(-KHopperSpeed);
-        hopper.moveRight(-KHopperSpeed);
-        break;
-      case LEFT: hopper.moveLeft(KHopperSpeed); // DIRECTIONS UNTESTED
-        hopper.moveRight(-KHopperSpeed);
-        break;
-      case RIGHT: hopper.moveLeft(-KHopperSpeed);
-        hopper.moveRight(KHopperSpeed);
-        break;
-    }
+    hopper.moveLeft(leftSpeed);
+    hopper.moveRight(rightSpeed);
   }
 
   // Called once the command ends or is interrupted.
