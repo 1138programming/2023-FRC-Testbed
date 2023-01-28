@@ -97,7 +97,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    // hopper.setDefaultCommand(hopperStop);
+    hopper.setDefaultCommand(hopperStop);
 
     // Game controllers
     logitech = new Joystick(KLogitechPort); // Logitech Dual Action
