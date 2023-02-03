@@ -32,16 +32,17 @@ public class PistonSet extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    switch(hello) {
-      case FORWARD:
-        piston.setForward(pistonNum);
-        break;
-      case BACKWARD:
-        piston.setReverse(pistonNum);
-        break;
-      case OFF:
-        piston.setOff(pistonNum);
-    }
+      switch(hello) {
+        case FORWARD:
+          piston.setForward(pistonNum);
+          break;
+        case BACKWARD:
+          piston.setReverse(pistonNum);
+          break;
+        case OFF:
+          piston.setOff(pistonNum);
+        
+      }
     }
         
   // Called every time the scheduler runs while the command is scheduled.

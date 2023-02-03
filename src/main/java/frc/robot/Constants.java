@@ -95,22 +95,22 @@ public final class Constants {
 
   //solenoid_1
   public static final int KSolenoid1ForwardChannel = 1;
-  public static final int KSolenoid1ReverseChannel = 0;
+  public static final int KSolenoid1ReverseChannel = 2;
 
   //solenoid_2
-  public static final int KSolenoid2ForwardChannel = 2;
-  public static final int KSolenoid2ReverseChannel = 3;
+  public static final int KSolenoid2ForwardChannel = 3;
+  public static final int KSolenoid2ReverseChannel = 4;
 
   //solenoid_3
-  public static final int KSolenoid3ForwardChannel = 2;
-  public static final int KSolenoid3ReverseChannel = 3;
+  public static final int KSolenoid3ForwardChannel = 5;
+  public static final int KSolenoid3ReverseChannel = 6;
 
   //solenoid_4
-  public static final int KSolenoid4ForwardChannel = 2;
-  public static final int KSolenoid4ReverseChannel = 3;
+  public static final int KSolenoid4ForwardChannel = 7;
+  public static final int KSolenoid4ReverseChannel = 8;
 
   //solenoid_5
-  public static final int KSolenoid5ForwardChannel = 2;
-  public static final int KSolenoid5ReverseChannel = 3;
+  public static final int KSolenoid5ForwardChannel = 9;
+  public static final int KSolenoid5ReverseChannel = 10;
 }
         

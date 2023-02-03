@@ -41,11 +41,11 @@ public class Piston extends SubsystemBase {
                 break;
 
             case 4:
-            solenoid4.set(kOff);
+                solenoid4.set(kOff);
 
                 break;
             case 5:
-            solenoid5.set(kOff);
+               solenoid5.set(kOff);
 
                 break;
             
@@ -82,13 +82,17 @@ public class Piston extends SubsystemBase {
         switch (solenoidId) {
             case 1: solenoid1.set(kReverse);
                 break;
-            case 2: solenoid2.set(kReverse);
+            case 2: 
+                solenoid2.set(kReverse);
                 break;
-            case 3: solenoid3.set(kReverse);
+            case 3: 
+                solenoid3.set(kReverse);
                 break;
-            case 4: solenoid4.set(kReverse);
+            case 4: 
+                solenoid4.set(kReverse);
                 break;
-            case 5: solenoid5.set(kReverse);
+            case 5: 
+                solenoid5.set(kReverse);
                 break;
         }
     }
